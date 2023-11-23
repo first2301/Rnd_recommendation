@@ -26,7 +26,7 @@ async def clf_test(request: Request): # dict
     target = data['target']
 
     # ray를 활용한 머신러닝 분산 학습
-    if not ray.is_initialized():
+    if not ray.is_initialized(): 
         ray.init()
     # model_compare_clf = train_caret_clf(df, df[target])
     model_compare_task = train_caret_clf.remote(df, df[target]) # 분류 모델 객체 선언
@@ -52,7 +52,6 @@ async def anomaly_test(request: Request):
         score_series = result[model_name]['Anomaly_Score']
         score_df = pd.concat([score_df, pd.DataFrame({model_name: score_series})], axis=1)
         
-
         try:
             key_zero = result[model_name]['Anomaly'].value_counts().keys()[0]
             value_zero = result[model_name]['Anomaly'].value_counts().values[0] 

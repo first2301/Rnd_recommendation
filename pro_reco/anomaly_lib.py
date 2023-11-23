@@ -1,7 +1,7 @@
 from pycaret.anomaly import AnomalyExperiment
 # import ray
 
-# @ray.remote
+# @ray.remote # 이상탐지의 경우, 분산학습을 하지 않아도 속도 차이가 없어서 ray 사용하지 않음
 def train_caret_anomaly(updated_df):
     s = AnomalyExperiment()
     s.setup(data=updated_df, session_id=123, normalize_method = 'minmax')
