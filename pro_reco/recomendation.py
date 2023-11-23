@@ -1,16 +1,14 @@
+# 대시보드 UI
 # https://docs.streamlit.io/knowledge-base/deploy/increase-file-uploader-limit-streamlit-cloud
 # https://docs.streamlit.io/library/advanced-features/configuration#set-configuration-options
 # 실행방법1: streamlit run recomendation.py
 # 실행방법2: streamlit run recomendation.py --server.maxUploadSize 500 --server.maxMessageSize 500 (업로드 파일 용량 증대할 경우)
-# import time
+# import time # 코드 실행 시간 측정 시 사용
 import ray
 import json
 import requests
 import pandas as pd
 import streamlit as st
-# 머신러닝 모델
-# from model_lib.pycaret_anomaly import *
-# from model_lib.pycaret_clf import *
 
 st.set_page_config(layout="wide")
 st.sidebar.title("Details")
