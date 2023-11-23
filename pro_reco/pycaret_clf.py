@@ -1,3 +1,4 @@
+# 함수형으로 실행하는 방법
 # from pycaret.classification import *
 
 # def train_caret_clf(data, target):
@@ -8,6 +9,7 @@
 #     prepro_compare_df.columns = result['Model']
 #     return prepro_compare_df
 
+# OOP 스타일로 실행하는 방법
 import ray
 from pycaret.classification import ClassificationExperiment
 
