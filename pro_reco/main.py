@@ -14,7 +14,7 @@ import ray
 
 app = FastAPI()
 
-@app.get('/')
+@app.get('/') # server test
 def main():
     return 'main'
 
