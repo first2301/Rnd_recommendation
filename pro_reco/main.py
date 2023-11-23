@@ -1,3 +1,4 @@
+# 분류모델, 이상탐지 모델 
 # uvicorn main:app --reload
 # uvicorn main:app --reload --port 8001
 from fastapi import FastAPI, Request
@@ -15,7 +16,7 @@ app = FastAPI()
 
 @app.get('/')
 def main():
-    return 'test'
+    return 'main'
 
 @app.post('/clf/')
 async def clf_test(request: Request): # dict
@@ -70,7 +71,7 @@ async def anomaly_test(request: Request):
                                                         'anomaly_mean_score': anomaly_mean_score, 'anomaly_std_score': anomaly_std_score}, index=[index])])
         except IndexError:
             continue
-    temp_score = score_df.to_json()
+    temp_score = score_df.to_json() # 
     temp_zero = zero_df.to_json()
     temp_one = one_df.to_json()
     json_score = json.loads(temp_score) # 이상치 score
