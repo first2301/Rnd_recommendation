@@ -18,7 +18,7 @@ def train_caret_clf(data, target):
     s.setup(data=data, target=target, session_id=123)
     
     models_to_exclude = ['lightgbm']
-    models = s.compare_models(exclude=models_to_exclude, sort='F1')
+    models = s.compare_models(exclude=models_to_exclude, sort='F1') # models 변수를 별도로 사용하지 않고 s.pull()로 머신러닝 모델 학습결과 출력 가능
 
     # models = s.compare_models(sort='F1') 
     result = s.pull()

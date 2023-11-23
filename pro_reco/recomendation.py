@@ -58,7 +58,6 @@ with st.spinner('Wait for it...'):
         data_to_drop = st.sidebar.multiselect('Drop Cloumns', options=col_list)
 
         tab_eda_df, tab_eda_info, tab_Label_counts = st.tabs(['Original data', 'Null information', 'Target Data Counts']) # tab_Label_counts Labels counts
-
         with tab_eda_df:
             st.write('Original data')
             st.dataframe(df)
@@ -91,8 +90,7 @@ with st.spinner('Wait for it...'):
                                         'Counts': ['Select Label Column']})
                 st.write(sample_df)
 
-        # 선택한 Column 제거
-        
+        # 선택한 Column 제거   
         if data_to_drop:
             for data in data_to_drop:
                 updated_df = df.drop(data_to_drop, axis=1)
