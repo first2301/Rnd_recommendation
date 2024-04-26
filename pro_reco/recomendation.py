@@ -9,6 +9,7 @@ import json
 import requests
 import pandas as pd
 import streamlit as st
+from database.connector import Database
 
 st.set_page_config(layout="wide")
 st.sidebar.title("Details")
@@ -19,36 +20,44 @@ option = st.sidebar.selectbox(
     ('분류', '이상탐지'))
 
 uploaded_file = st.sidebar.file_uploader("csv file upload", type="csv") # 파일 업로드
+database_string = st.sidebar.text_input('Input database string') # Database string 입력
+table_name = st.sidebar.text_input('Input table name') # 데이터 전처리 수행할 테이블명 입력
+table_meta_df = None
+try:
+    # test db string sqlite:///./database/database.db
+    db = Database(database_string)
+    tb_info = db.tables_info() 
+    table_names = [table_names for table_names in tb_info]
+    table_meta_df = pd.DataFrame({'table_names': table_names})
+except:
+    st.sidebar.write('Need to input Database string')
 
 # @st.cache_data # resource
 def load_data(uploaded_file):
     return pd.read_csv(uploaded_file)
 
 with st.spinner('Wait for it...'):
-    if uploaded_file is None: 
-        st.write(
-        '''
-        ### 머신러닝 실행 방법
-        * 분류
-        1. Upload csv file 
-        2. Select Target column 
-        3. Drop cloumns
-        4. 제거할 Target 데이터 선택
+    # if uploaded_file is None: 
+    #     st.write(
+    #     '''
+    #     ### 머신러닝 실행 방법
+    #     * 분류
+    #     1. Upload csv file 
+    #     2. Select Target column 
+    #     3. Drop cloumns
+    #     4. 제거할 Target 데이터 선택
 
-        * 이상 탐지
-        1. Upload csv file
-        2. 머신러닝 테스트 실행
-        ''')
+    #     * 이상 탐지
+    #     1. Upload csv file
+    #     2. 머신러닝 테스트 실행
+    #     ''')
 
     updated_df = None
     # Uploaded data Dashboard
-    target_feture = "" # 예측할 Label
-
     if uploaded_file is not None:
         st.subheader('데이터 분석')
-        df = load_data(uploaded_file)
+        df = load_data(uploaded_file)           
         col_list = df.columns.tolist() # 데이터 전처리 옵션 설정 리스트
-
         target_feture = ""
         if option == '분류':
             target_feture = st.sidebar.multiselect('Select Target Column', options=col_list)

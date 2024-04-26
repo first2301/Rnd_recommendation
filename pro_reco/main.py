@@ -2,10 +2,10 @@
 # uvicorn main:app --reload
 # uvicorn main:app --reload --port 8001
 from fastapi import FastAPI, Request
-from anomaly_lib import *
-from pycaret_clf import *
-from pycaret.anomaly import AnomalyExperiment
-from pycaret.classification import ClassificationExperiment
+from lib.anomaly_lib import *
+from lib.pycaret_clf import *
+# from pycaret.anomaly import AnomalyExperiment
+# from pycaret.classification import ClassificationExperiment
 from fastapi.responses import JSONResponse
 import pandas as pd
 import numpy as np
