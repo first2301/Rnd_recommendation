@@ -36,19 +36,3 @@ class Database:
             result = conn.execute(query)
             df = pd.DataFrame(result, columns=result.keys())
             return df
-
-# class SelectTB:
-#     def __init__(self, path, tb_name):
-#         self.path = path
-#         self.tb_name = tb_name
-#         self.engine = create_engine(path, connect_args={"check_same_thread": False})
-#         self.metadata = MetaData()
-#         self.metadata.reflect(bind=self.engine)
-
-#     def select_tb(self):
-#         with self.engine.connect() as conn:
-#             table = Table(self.tb_name, self.metadata, autoreload=True)
-#             query = table.select()
-#             result = conn.execute(query)
-#             df = pd.DataFrame(result, columns=result.keys())
-#             return df
