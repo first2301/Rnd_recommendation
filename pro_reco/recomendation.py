@@ -10,9 +10,8 @@ import json
 import requests
 import pandas as pd
 import streamlit as st
-from sklearn.preprocessing import LabelEncoder
-
 from lib.template import Template
+from lib.prepro import Preprocessing
 from database.connector import Database # , SelectTB
 
 st.set_page_config(layout="wide")
@@ -27,6 +26,8 @@ uploaded_file = None
 df = None
 if connecton_option == 'File_upload':
     uploaded_file = st.sidebar.file_uploader("csv file upload", type="csv") # 파일 업로드
+    if uploaded_file:
+        df = pd.read_csv(uploaded_file)
 if connecton_option == 'DB_connection':
     database_string = st.sidebar.text_input('Input database string') # Database string 입력
     try:
@@ -46,13 +47,13 @@ if connecton_option == 'DB_connection':
         st.sidebar.write('Need to input table name')
 
 # @st.cache_data # resource
-def load_data(uploaded_file):
-    return pd.read_csv(uploaded_file)
-try:
-    if connecton_option == 'File_upload':
-        df = load_data(uploaded_file)  
-except ValueError:
-    st.sidebar.write('Need to upload csv file')
+# def load_data(uploaded_file):
+#     return pd.read_csv(uploaded_file)
+# try:
+#     if connecton_option == 'File_upload':
+#         df = load_data(uploaded_file)  
+# except ValueError:
+#     st.sidebar.write('Need to upload csv file')
 
 with st.spinner('Wait for it...'):
     # if uploaded_file is None: 
@@ -79,34 +80,34 @@ with st.spinner('Wait for it...'):
         target_feture = ""
         if option == '분류':
             target_feture = st.sidebar.multiselect('Select Target Column', options=col_list)
-
         data_to_drop = st.sidebar.multiselect('Drop Cloumns', options=col_list)
-        data_for_labelencoding = st.sidebar.multiselect('Choose LabelEncoding column', options=col_list)
-
+        data_for_labelencoding = st.sidebar.multiselect('Choose LabelEncoding column name', options=col_list)
         tab_eda_df, tab_eda_info, tab_Label_counts = st.tabs(['Original data', 'Null information', 'Target Data Counts']) # tab_Label_counts Labels counts
-        with tab_eda_df:
-            st.write('Original data')
-            st.dataframe(df)
-        with tab_eda_info:
-            # template = Template(df)
-            template.info_df() #
-
+        # tab_eda_df, tab_eda_info tab UI Template
+        template.eda_df(tab_eda_df=tab_eda_df, tab_eda_info=tab_eda_info)
         label_to_drop = ""
         with tab_Label_counts: # Target Data 정보 출력 및 시각화
-            val_counts_df = None
             if target_feture:            
-                label_to_drop = template.label_to_drop(target_feture, val_counts_df)
+                label_to_drop = template.label_to_drop(target_feture) # 제거할 Target 데이터 선택
             else:
                 template.sample_df()
+
+        # LaberEncooding
+        if data_for_labelencoding:
+            prepro = Preprocessing()
+            if updated_df is None:
+                # st.write(type(df[data_for_labelencoding]))
+                df = prepro.encoded_df(df, data_for_labelencoding[0])
+                updated_df = df
+            if updated_df is not None:
+                updated_df = prepro.encoded_df(updated_df, data_for_labelencoding[0])
 
         # 선택한 Column 제거   
         if data_to_drop:
             for data in data_to_drop:
                 updated_df = df.drop(data_to_drop, axis=1)
-        # target_feture= st.sidebar.multiselect('Select target', options=col_list)
 
         # 선택한 Target Data 제거
-
         try:
             if label_to_drop:
                 target_feture = target_feture[0]
@@ -114,12 +115,6 @@ with st.spinner('Wait for it...'):
                 updated_df = df[df[target_feture] != label_to_drop]
         except ValueError:
             st.write('1개 이상 데이터가 남아있어야 합니다.')
-
-        if data_for_labelencoding: # LabelEncoding
-            st.write(data_for_labelencoding[0])
-            st.write(updated_df)
-            updated_df[target_feture] = LabelEncoder().fit_transform(updated_df[data_for_labelencoding[0]])
-
 
         # 데이터 전처리된 데이터 출력
         if updated_df is not None: 
@@ -129,6 +124,8 @@ with st.spinner('Wait for it...'):
         if st.sidebar.button("초기화"):
             st.cache_resource.clear()
 
+
+#################### Starting ML traning
         button_for_training = st.sidebar.button("머신러닝 테스트 실행", key="button1") 
         if button_for_training: # 분류, 이상탐지 옵션에 따라 머신러닝 학습 진행
             # start_time = time.time() # 학습 시간 체크 시 설정

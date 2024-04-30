@@ -8,10 +8,10 @@ from fastapi import FastAPI, Request
 # from pycaret.classification import ClassificationExperiment
 from fastapi.responses import JSONResponse
 import pandas as pd
-import numpy as np
+# import numpy as np
 import json
-import ray
-
+# import ray
+from io import StringIO
 from lib.ml_engine import Classification
 
 app = FastAPI()
@@ -24,16 +24,22 @@ def main():
 @app.post('/new_clf')
 async def new_clf(request: Request):
     data = await request.json()
-    df = pd.read_json(data['json_data'])
+    print('data: ', data)
+    df = pd.read_json(StringIO(data['json_data']))
     target = data['target']
+    print('### df: ', df)
+    print('### target: ', target)
 
-    if not ray.is_initialized():
-        ray.init()
-    clf_compare = Classification(df, target).train_clf()
-    ray.shutdown()
-    
-    df_to_json = clf_compare.to_json()
-    result_data = json.loads(df_to_json)
+    # if not ray.is_initialized():
+    #     ray.init()
+
+    clf_compare = Classification(X=df, y=df[target]).train_clf()
+    # ray.shutdown()
+
+    # df_to_json = clf_compare.to_json()
+    dumps_data = json.dumps(clf_compare)
+    result_data = json.loads(dumps_data)
+    print('result_data: ', result_data)
     return JSONResponse(content={'result': result_data})
 
 # @app.post('/clf/')

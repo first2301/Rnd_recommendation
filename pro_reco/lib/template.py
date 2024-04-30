@@ -20,8 +20,18 @@ class Template:
         info_df.reset_index(inplace=True)
         st.write(info_df.iloc[:, 1:].astype(str))
 
+    def eda_df(self, tab_eda_df, tab_eda_info):
+        '''
+        DataFrame 확인을 위한 streamlit tab
+        '''
+        with tab_eda_df:
+            st.write('Original data')
+            st.dataframe(self.df)
+        with tab_eda_info:
+            # template = Template(df)
+            self.info_df() 
 
-    def label_to_drop(self, target_feture, val_counts_df):
+    def label_to_drop(self, target_feture):
         '''
         제거할 Label 선택
         '''
@@ -38,6 +48,9 @@ class Template:
         return label_to_drop
     
     def sample_df(self):
+        '''
+        Target column 설정하지 않았을 경우 보여주는 Sample data
+        '''
         sample_df = pd.DataFrame({'Label': ['Select Label Column'], # Sample Data
                                 'Counts': ['Select Label Column']})
         st.write(sample_df)
