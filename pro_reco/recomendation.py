@@ -10,6 +10,9 @@ import json
 import requests
 import pandas as pd
 import streamlit as st
+from sklearn.preprocessing import LabelEncoder
+
+from lib.template import Template
 from database.connector import Database # , SelectTB
 
 st.set_page_config(layout="wide")
@@ -42,7 +45,6 @@ if connecton_option == 'DB_connection':
     except:
         st.sidebar.write('Need to input table name')
 
-
 # @st.cache_data # resource
 def load_data(uploaded_file):
     return pd.read_csv(uploaded_file)
@@ -71,6 +73,7 @@ with st.spinner('Wait for it...'):
     updated_df = None
     # Uploaded data Dashboard
     if uploaded_file is not None or df is not None:
+        template = Template(df)
         st.subheader('데이터 분석')
         col_list = df.columns.tolist() # 데이터 전처리 옵션 설정 리스트
         target_feture = ""
@@ -78,44 +81,29 @@ with st.spinner('Wait for it...'):
             target_feture = st.sidebar.multiselect('Select Target Column', options=col_list)
 
         data_to_drop = st.sidebar.multiselect('Drop Cloumns', options=col_list)
+        data_for_labelencoding = st.sidebar.multiselect('Choose LabelEncoding column', options=col_list)
 
         tab_eda_df, tab_eda_info, tab_Label_counts = st.tabs(['Original data', 'Null information', 'Target Data Counts']) # tab_Label_counts Labels counts
         with tab_eda_df:
             st.write('Original data')
             st.dataframe(df)
         with tab_eda_info:
-            st.write('Null information')
-            info_df = pd.DataFrame({'Column names': df.columns,
-                                    'Non-Null Count': df.count(),
-                                    'Null Count': df.isnull().sum(),
-                                    'Dtype': df.dtypes,
-                                    })
-            info_df.reset_index(inplace=True)
-            st.write(info_df.iloc[:, 1:].astype(str))
+            # template = Template(df)
+            template.info_df() #
 
         label_to_drop = ""
         with tab_Label_counts: # Target Data 정보 출력 및 시각화
             val_counts_df = None
             if target_feture:            
-                test = df[target_feture].value_counts().reset_index()
-                val_counts_df = pd.DataFrame({'Labels': test.iloc[:, 0],
-                                            'Counts': test.iloc[:, 1]})
-                st.write(val_counts_df)
-                bar_data = val_counts_df
-                bar_data.index = val_counts_df['Labels']
-                st.bar_chart(bar_data['Counts'])
-
-                # Target Data 설정해야 제거할 Label 선택 가능
-                label_to_drop = st.sidebar.multiselect('제거할 Target 데이터 선택', options=val_counts_df.iloc[:, 0])
+                label_to_drop = template.label_to_drop(target_feture, val_counts_df)
             else:
-                sample_df = pd.DataFrame({'Label': ['Select Label Column'], # Sample Data
-                                        'Counts': ['Select Label Column']})
-                st.write(sample_df)
+                template.sample_df()
 
         # 선택한 Column 제거   
         if data_to_drop:
             for data in data_to_drop:
                 updated_df = df.drop(data_to_drop, axis=1)
+        # target_feture= st.sidebar.multiselect('Select target', options=col_list)
 
         # 선택한 Target Data 제거
 
@@ -126,6 +114,12 @@ with st.spinner('Wait for it...'):
                 updated_df = df[df[target_feture] != label_to_drop]
         except ValueError:
             st.write('1개 이상 데이터가 남아있어야 합니다.')
+
+        if data_for_labelencoding: # LabelEncoding
+            st.write(data_for_labelencoding[0])
+            st.write(updated_df)
+            updated_df[target_feture] = LabelEncoder().fit_transform(updated_df[data_for_labelencoding[0]])
+
 
         # 데이터 전처리된 데이터 출력
         if updated_df is not None: 
@@ -144,11 +138,13 @@ with st.spinner('Wait for it...'):
                 with st.spinner('Wait for it...'):
                     if updated_df is None:
                         updated_df = df   
+
                     json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
                     data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
 
-                    response = requests.post('http://127.0.0.1:8001/clf', json=data) # NIPA 서버로 머신러닝 학습데이터 request
+                    # response = requests.post('http://127.0.0.1:8001/clf', json=data)
+                    response = requests.post('http://127.0.0.1:8001/new_clf', json=data) # NIPA 서버로 머신러닝 학습데이터 request
                     if response.status_code == 200: 
                         json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
                         model_compare_clf = json_data['result'] 
