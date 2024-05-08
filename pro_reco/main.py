@@ -12,7 +12,7 @@ import pandas as pd
 import json
 # import ray
 from io import StringIO
-from lib.ml_engine import Classification
+from lib.ml_engine import Classification, Regression
 
 app = FastAPI()
 
@@ -24,19 +24,26 @@ def main():
 @app.post('/new_clf')
 async def new_clf(request: Request):
     data = await request.json()
-    print('data: ', data)
     df = pd.read_json(StringIO(data['json_data']))
     target = data['target']
-    print('### df: ', df)
-    print('### target: ', target)
 
     # if not ray.is_initialized():
     #     ray.init()
 
     clf_compare = Classification(X=df, y=df[target]).train_clf()
     # ray.shutdown()
-
     # df_to_json = clf_compare.to_json()
+    dumps_data = json.dumps(clf_compare)
+    result_data = json.loads(dumps_data)
+    print('result_data: ', result_data)
+    return JSONResponse(content={'result': result_data})
+
+@app.post('/new_reg')
+async def new_reg(request: Request):
+    data = await request.json()
+    df = pd.read_json(StringIO(data['json_data']))
+    target = data['target']
+    clf_compare = Regression(X=df, y=df[target]).train_reg()
     dumps_data = json.dumps(clf_compare)
     result_data = json.loads(dumps_data)
     print('result_data: ', result_data)

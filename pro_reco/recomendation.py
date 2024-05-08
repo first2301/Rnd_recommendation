@@ -19,7 +19,7 @@ st.sidebar.title("Details")
 
 # 분류, 이상 탐지 등 추천받을 머신러닝 모델 선택
 option = st.sidebar.selectbox(
-    'Select Machine Learning Task', ('분류', '이상탐지'))
+    'Select Machine Learning Task', ('분류', '이상탐지', '회귀'))
 connecton_option = st.sidebar.selectbox(
     'Select how to upload data', ('File_upload', 'DB_connection'))
 uploaded_file = None
@@ -78,7 +78,7 @@ with st.spinner('Wait for it...'):
         st.subheader('데이터 분석')
         col_list = df.columns.tolist() # 데이터 전처리 옵션 설정 리스트
         target_feture = ""
-        if option == '분류':
+        if option == '분류' or option == '회귀':
             target_feture = st.sidebar.multiselect('Select Target Column', options=col_list)
         data_to_drop = st.sidebar.multiselect('Drop Cloumns', options=col_list)
         data_for_labelencoding = st.sidebar.multiselect('Choose LabelEncoding column name', options=col_list)
@@ -144,19 +144,94 @@ with st.spinner('Wait for it...'):
                     response = requests.post('http://127.0.0.1:8001/new_clf', json=data) # NIPA 서버로 머신러닝 학습데이터 request
                     if response.status_code == 200: 
                         json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
-                        model_compare_clf = json_data['result'] 
+                        # model_compare_clf = json_data['result']
 
-                        tab_line, tab_bar = st.tabs(['Line Chart', 'Bar Chart']) # 분류모델 학습 결과 시각화
-                        with tab_line:
-                            st.subheader('Line Chart')
-                            st.line_chart(model_compare_clf)
-                        with tab_bar:
-                            st.subheader('Bar Chart')
-                            st.bar_chart(model_compare_clf)
+                        data = json.loads(json_data['result'])
+                        model_compare_clf = pd.DataFrame(data, index=['RandomForestClassifier', 'XGBClassifier', 'KNeighborsClassifier', 'AdaBoostClassifier', 'GradientBoostingClassifier', 'GaussianNB'])
 
-                        st.subheader('Score')
-                        st.dataframe(model_compare_clf)
-                        ray.shutdown() # 머신러닝 모델 분산 학습 종료
+                        # tab_line, tab_bar = st.tabs(['Line Chart', 'Bar Chart']) # 분류모델 학습 결과 시각화                        
+                        # with tab_line:
+                        #     st.subheader('Line Chart')
+                        #     st.line_chart(model_compare_clf)
+                        # with tab_bar:
+                        #     st.subheader('Bar Chart')
+                        #     st.bar_chart(model_compare_clf)
+
+                        # st.subheader('Score')
+                        # st.dataframe(model_compare_clf)
+
+                        with st.container():
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('accuracy')
+                                st.scatter_chart(model_compare_clf['accuracy'])
+                            with col2:
+                                st.subheader('accuracy')
+                                st.dataframe(model_compare_clf['accuracy'])
+
+                        with st.container():
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('precision')
+                                st.scatter_chart(model_compare_clf['precision'])
+                            with col2:
+                                st.subheader('precision')
+                                st.dataframe(model_compare_clf['precision'])
+
+                        with st.container():
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('recall')
+                                st.scatter_chart(model_compare_clf['recall'])
+                            with col2:
+                                st.subheader('recall')
+                                st.dataframe(model_compare_clf['recall'])
+
+                        with st.container():
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('f1_score')
+                                st.scatter_chart(model_compare_clf['f1_score'])
+                            with col2:
+                                st.subheader('f1_score')
+                                st.dataframe(model_compare_clf['f1_score'])
+
+            if option == '회귀':
+                st.subheader('머신러닝 학습 결과')
+                with st.spinner('Wait for it...'):
+                    if updated_df is None:
+                        updated_df = df   
+
+                    json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
+                    data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
+                    data = json.loads(data_dump) # json을 파이썬 객체로 변환
+
+                    # response = requests.post('http://127.0.0.1:8001/clf', json=data)
+                    response = requests.post('http://127.0.0.1:8001/new_reg', json=data) # NIPA 서버로 머신러닝 학습데이터 request
+                    if response.status_code == 200: 
+                        json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
+                        # model_compare_clf = json_data['result']
+                        data = json.loads(json_data['result'])
+                        model_compare_clf = pd.DataFrame(data, index=['XGBRegressor', 'RandomForestRegressor', 'AdaBoostRegressor',
+                                                                      'GradientBoostingRegressor', 'Ridge', 'Lasso', 'ElasticNet'])
+                        with st.container():
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('mean_absolute_error')
+                                st.scatter_chart(model_compare_clf['mean_absolute_error'])
+                            with col2:
+                                st.subheader('mean_absolute_error')
+                                st.dataframe(model_compare_clf['mean_absolute_error'])
+
+                        with st.container():
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('mean_squared_error')
+                                st.scatter_chart(model_compare_clf['mean_squared_error'])
+                            with col2:
+                                st.subheader('mean_squared_error')
+                                st.dataframe(model_compare_clf['mean_squared_error'])
+                        # ray.shutdown() # 머신러닝 모델 분산 학습 종료
            
             if option == '이상탐지':
                 st.subheader('머신러닝 학습 결과')
