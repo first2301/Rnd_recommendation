@@ -164,7 +164,7 @@ with st.spinner('Wait for it...'):
                             col1, col2 = st.columns(2)
                             with col1:
                                 st.subheader('accuracy')
-                                st.scatter_chart(model_compare_clf['accuracy'])
+                                st.bar_chart(model_compare_clf['accuracy'])
                             with col2:
                                 st.subheader('accuracy')
                                 st.dataframe(model_compare_clf['accuracy'])
@@ -173,7 +173,7 @@ with st.spinner('Wait for it...'):
                             col1, col2 = st.columns(2)
                             with col1:
                                 st.subheader('precision')
-                                st.scatter_chart(model_compare_clf['precision'])
+                                st.bar_chart(model_compare_clf['precision'])
                             with col2:
                                 st.subheader('precision')
                                 st.dataframe(model_compare_clf['precision'])
@@ -182,7 +182,7 @@ with st.spinner('Wait for it...'):
                             col1, col2 = st.columns(2)
                             with col1:
                                 st.subheader('recall')
-                                st.scatter_chart(model_compare_clf['recall'])
+                                st.bar_chart(model_compare_clf['recall'])
                             with col2:
                                 st.subheader('recall')
                                 st.dataframe(model_compare_clf['recall'])
@@ -191,7 +191,7 @@ with st.spinner('Wait for it...'):
                             col1, col2 = st.columns(2)
                             with col1:
                                 st.subheader('f1_score')
-                                st.scatter_chart(model_compare_clf['f1_score'])
+                                st.bar_chart(model_compare_clf['f1_score'])
                             with col2:
                                 st.subheader('f1_score')
                                 st.dataframe(model_compare_clf['f1_score'])
@@ -207,18 +207,21 @@ with st.spinner('Wait for it...'):
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
 
                     # response = requests.post('http://127.0.0.1:8001/clf', json=data)
-                    response = requests.post('http://127.0.0.1:8001/new_reg', json=data) # NIPA 서버로 머신러닝 학습데이터 request
+                    response = requests.post('http://127.0.0.1:8001/new_reg', json=data) # NIPA 서버로 머신러닝 학습데이터 request 
+                    # response = requests.post('http://127.0.0.1:8001/reg_curv', json=data)
+
                     if response.status_code == 200: 
                         json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
                         # model_compare_clf = json_data['result']
                         data = json.loads(json_data['result'])
+                        # st.write(data)
                         model_compare_clf = pd.DataFrame(data, index=['XGBRegressor', 'RandomForestRegressor', 'AdaBoostRegressor',
                                                                       'GradientBoostingRegressor', 'Ridge', 'Lasso', 'ElasticNet'])
                         with st.container():
                             col1, col2 = st.columns(2)
                             with col1:
                                 st.subheader('mean_absolute_error')
-                                st.scatter_chart(model_compare_clf['mean_absolute_error'])
+                                st.bar_chart(model_compare_clf['mean_absolute_error'])
                             with col2:
                                 st.subheader('mean_absolute_error')
                                 st.dataframe(model_compare_clf['mean_absolute_error'])
@@ -227,7 +230,7 @@ with st.spinner('Wait for it...'):
                             col1, col2 = st.columns(2)
                             with col1:
                                 st.subheader('mean_squared_error')
-                                st.scatter_chart(model_compare_clf['mean_squared_error'])
+                                st.bar_chart(model_compare_clf['mean_squared_error'])
                             with col2:
                                 st.subheader('mean_squared_error')
                                 st.dataframe(model_compare_clf['mean_squared_error'])

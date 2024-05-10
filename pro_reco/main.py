@@ -13,7 +13,7 @@ import json
 # import ray
 from io import StringIO
 from lib.ml_engine import Classification, Regression
-
+from lib.ml_engine_tune import RegressionCurv
 app = FastAPI()
 
 @app.get('/') # server test
@@ -44,6 +44,19 @@ async def new_reg(request: Request):
     df = pd.read_json(StringIO(data['json_data']))
     target = data['target']
     clf_compare = Regression(X=df, y=df[target]).train_reg()
+    dumps_data = json.dumps(clf_compare)
+    result_data = json.loads(dumps_data)
+    print('result_data: ', result_data)
+    return JSONResponse(content={'result': result_data})
+
+
+@app.post('/reg_curv')
+async def new_reg(request: Request):
+    data = await request.json()
+    df = pd.read_json(StringIO(data['json_data']))
+    target = data['target']
+    clf_compare = RegressionCurv(X=df, y=df[target]).train_reg()
+    print('clf_compare: ', clf_compare)
     dumps_data = json.dumps(clf_compare)
     result_data = json.loads(dumps_data)
     print('result_data: ', result_data)
