@@ -5,6 +5,8 @@
 # 실행방법2: streamlit run recomendation.py --server.maxUploadSize 500 --server.maxMessageSize 500 (업로드 파일 용량 증대할 경우)
 # import time # 코드 실행 시간 측정 시 사용
 # sqlite:///./database/database.db
+# AxiosError: Request failed with status code 403 in streamlit 발생 시, enableXsrfProtection 입력하여 실행
+# streamlit run recomendation.py--server.enableXsrfProtection false
 import ray
 import json
 import requests
@@ -13,6 +15,9 @@ import streamlit as st
 from lib.template import Template
 from lib.prepro import Preprocessing
 from database.connector import Database # , SelectTB
+import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 st.set_page_config(layout="wide")
 st.sidebar.title("Details")
@@ -141,13 +146,15 @@ with st.spinner('Wait for it...'):
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
 
                     # response = requests.post('http://127.0.0.1:8001/clf', json=data)
-                    response = requests.post('http://127.0.0.1:8001/new_clf', json=data) # NIPA 서버로 머신러닝 학습데이터 request
+                    response = requests.post('http://127.0.0.1:8001/new_clf', json=data) 
                     if response.status_code == 200: 
-                        json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
+                        json_data = response.json() 
                         # model_compare_clf = json_data['result']
 
                         data = json.loads(json_data['result'])
-                        model_compare_clf = pd.DataFrame(data, index=['RandomForestClassifier', 'XGBClassifier', 'KNeighborsClassifier', 'AdaBoostClassifier', 'GradientBoostingClassifier', 'GaussianNB'])
+                        model_compare_clf = pd.DataFrame(data, index= ['RandomForestClassifier', 'GradientBoostingClassifier', 'XGBClassifier', 'KNeighborsClassifier', 
+                                                                        'AdaBoostClassifier', 'GaussianNB', 'QuadraticDiscriminantAnalysis', 'LinearDiscriminantAnalysis', 'CatBoostClassifier'])
+                       
 
                         # tab_line, tab_bar = st.tabs(['Line Chart', 'Bar Chart']) # 분류모델 학습 결과 시각화                        
                         # with tab_line:
@@ -160,42 +167,85 @@ with st.spinner('Wait for it...'):
                         # st.subheader('Score')
                         # st.dataframe(model_compare_clf)
 
-                        with st.container():
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.subheader('accuracy')
-                                st.bar_chart(model_compare_clf['accuracy'])
-                            with col2:
-                                st.subheader('accuracy')
-                                st.dataframe(model_compare_clf['accuracy'])
 
-                        with st.container():
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.subheader('precision')
-                                st.bar_chart(model_compare_clf['precision'])
-                            with col2:
-                                st.subheader('precision')
-                                st.dataframe(model_compare_clf['precision'])
+                        st.write(model_compare_clf)
+                        # st.dataframe(model_compare_clf.style.highlight_max(axis=0))
+                       
 
-                        with st.container():
-                            col1, col2 = st.columns(2)
+                        with st.container(): # accuracy
+                            col1, col2, col3, col4 = st.columns(4)
                             with col1:
-                                st.subheader('recall')
-                                st.bar_chart(model_compare_clf['recall'])
+                                st.subheader('train_accuracy')
+                                st.bar_chart(model_compare_clf['train_accuracy'])
+                            
                             with col2:
-                                st.subheader('recall')
-                                st.dataframe(model_compare_clf['recall'])
+                                st.subheader('val_accuracy')
+                                st.bar_chart(model_compare_clf['val_accuracy'])
+                            
+                            with col3:
+                                st.subheader('test_accuracy')
+                                st.bar_chart(model_compare_clf['test_accuracy'])
+                            
+                            with col4:
+                                st.subheader('accuracy table')
+                                st.dataframe(model_compare_clf[['train_accuracy', 'val_accuracy', 'test_accuracy']])
 
-                        with st.container():
-                            col1, col2 = st.columns(2)
+
+                        with st.container(): # precision
+                            col1, col2, col3, col4 = st.columns(4)
                             with col1:
-                                st.subheader('f1_score')
-                                st.bar_chart(model_compare_clf['f1_score'])
+                                st.subheader('train_precision')
+                                st.bar_chart(model_compare_clf['train_precision'])
+                            
                             with col2:
-                                st.subheader('f1_score')
-                                st.dataframe(model_compare_clf['f1_score'])
+                                st.subheader('val_precision')
+                                st.bar_chart(model_compare_clf['val_precision'])
+                            
+                            with col3:
+                                st.subheader('test_precision')
+                                st.bar_chart(model_compare_clf['test_precision'])
+                            
+                            with col4:
+                                st.subheader('precision table')
+                                st.dataframe(model_compare_clf[['train_precision', 'val_precision', 'test_precision']])
 
+                        with st.container(): # recall
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.subheader('train_recall')
+                                st.bar_chart(model_compare_clf['train_recall'])
+                            
+                            with col2:
+                                st.subheader('val_recall')
+                                st.bar_chart(model_compare_clf['val_recall'])
+                            
+                            with col3:
+                                st.subheader('test_recall')
+                                st.bar_chart(model_compare_clf['test_recall'])
+                            
+                            with col4:
+                                st.subheader('recall table')
+                                st.dataframe(model_compare_clf[['train_recall', 'val_recall', 'test_recall']])
+
+                        with st.container(): # fscore
+                            col1, col2, col3, col4 = st.columns(4)
+                            with col1:
+                                st.subheader('train_fscore')
+                                st.bar_chart(model_compare_clf['train_fscore'])
+                            
+                            with col2:
+                                st.subheader('val_fscore')
+                                st.bar_chart(model_compare_clf['val_fscore'])
+                            
+                            with col3:
+                                st.subheader('test_fscore')
+                                st.bar_chart(model_compare_clf['test_fscore'])
+                            
+                            with col4:
+                                st.subheader('fscore table')
+                                st.dataframe(model_compare_clf[['train_fscore', 'val_fscore', 'test_fscore']])
+                        
+                        
             if option == '회귀':
                 st.subheader('머신러닝 학습 결과')
                 with st.spinner('Wait for it...'):
@@ -207,7 +257,7 @@ with st.spinner('Wait for it...'):
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
 
                     # response = requests.post('http://127.0.0.1:8001/clf', json=data)
-                    response = requests.post('http://127.0.0.1:8001/new_reg', json=data) # NIPA 서버로 머신러닝 학습데이터 request 
+                    response = requests.post('http://127.0.0.1:8001/new_reg', json=data) 
                     # response = requests.post('http://127.0.0.1:8001/reg_curv', json=data)
 
                     if response.status_code == 200: 
@@ -244,7 +294,7 @@ with st.spinner('Wait for it...'):
                     json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
                     data = json.loads(json_data) # json을 파이썬 객체로 변환
                     
-                    response = requests.post('http://127.0.0.1:8001/anomaly', json=data)  # NIPA 서버로 머신러닝 학습데이터 request
+                    response = requests.post('http://127.0.0.1:8001/anomaly', json=data)  
 
                     if response.status_code == 200:
                         # st.write('정상 데이터 평균 점수가 낮은 순서로 추천')

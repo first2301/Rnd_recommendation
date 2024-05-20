@@ -8,8 +8,10 @@ from xgboost import XGBClassifier, XGBRegressor
 import lightgbm as lgb
 
 from sklearn.linear_model import Ridge, Lasso, ElasticNet
-from sklearn.cluster import KMeans, DBSCAN
 from sklearn.naive_bayes import GaussianNB
+
+from sklearn.cluster import KMeans, DBSCAN, AffinityPropagation, MeanShift, SpectralBiclustering
+from sklearn.cluster import Birch, AgglomerativeClustering, SpectralClustering
 
 from sklearn.svm import SVC
 
@@ -587,15 +589,71 @@ class Cluster:
     def __init__(self, data):
         self.data = data
 
-    def train_clu(self):
+    def kmeans_train(self):
         data = self.data
-        km = KMeans()
-        db = DBSCAN()
+        model = KMeans()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def dbscan_train(self):
+        data = self.data
+        model = DBSCAN(eps=0.5, min_samples=5)
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def affinity_train(self):
+        data = self.data
+        model = AffinityPropagation()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def meanshift_train(self):
+        data = self.data
+        model = MeanShift()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def spec_train(self):
+        data = self.data
+        model = SpectralClustering()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def specbi_train(self):
+        data = self.data
+        model = SpectralBiclustering()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def birch_train(self):
+        data = self.data
+        model = Birch()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def agg_train(self):
+        data = self.data
+        model = AgglomerativeClustering()
+        score = silhouette_score(data, model.fit_predict(data))
+        return score
+    
+    def clu_run(self):
+        kmeans = self.kmeans_train()
+        dbscan = self.dbscan_train()
+        affinitypropagation = self.affinity_train()
+        meanshift = self.meanshift_train()
+        spectralclustering = self.spec_train()
+        spectralBiclustering = self.specbi_train()
+        birch = self.birch_train()
+        agglomerativeclustering = self.agg_train()
 
-        km_score = silhouette_score(data, km.fit_predict(data))
-        db_score = silhouette_score(data, db.fit_predict(data))
-        return {'KMeans': km_score, 'DBSCAN': db_score}
-
+        df = pd.concat([kmeans, dbscan, affinitypropagation, meanshift, spectralclustering,
+                        spectralBiclustering, birch, agglomerativeclustering])
+        df.index=['KMeans', 'DBSCAN', 'AffinityPropagation', 'MeanShift', 'spectralclustering',
+                  'SpectralBiclustering', 'Birch', 'AgglomerativeClustering']
+        
+        return df.to_json(orient='records')
+    
 
 # class RegressionCurv:
 #     def __init__(self, X, y):
