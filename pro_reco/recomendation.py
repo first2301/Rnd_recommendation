@@ -168,7 +168,12 @@ with st.spinner('Wait for it...'):
                         # st.dataframe(model_compare_clf)
 
                         model_compare_clf.drop(['train_accuracy', 'train_precision', 'train_recall', 'train_fscore'], axis=1, inplace=True)
-                        st.write(model_compare_clf.sort_values(by=['test_fscore'], ascending=False))
+                        sorted_by_f1score = model_compare_clf.sort_values(by=['test_fscore'], ascending=False)
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.bar_chart(sorted_by_f1score[:1][['test_accuracy', 'test_precision', 'test_recall', 'test_fscore']].T)
+                        with col2:                     
+                            st.write(sorted_by_f1score)
                         # st.dataframe(model_compare_clf.style.highlight_max(axis=0))
                        
 
