@@ -56,20 +56,20 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
             }, 
             index=['RandomForestClassifier'])
         
@@ -91,16 +91,16 @@ class Classification:
             'val_accuracy': val_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
             }, 
             index=['GradientBoostingClassifier'])
         return df
@@ -117,20 +117,20 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
             }, 
             index=['XGBClassifier'])
         return df
@@ -147,20 +147,20 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
             }, 
             index=['KNeighborsClassifier'])
         return df
@@ -177,20 +177,23 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
+        
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
+
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
+
             }, 
             index=['AdaBoostClassifier'])
         return df
@@ -207,20 +210,23 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
+
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
+
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
+
             }, 
             index=['GaussianNB'])
         return df
@@ -237,20 +243,22 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
+
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
+
             }, 
             index=['QuadraticDiscriminantAnalysis'])
         return df
@@ -267,20 +275,22 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
+
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
+
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
             }, 
             index=['LinearDiscriminantAnalysis'])
         return df
@@ -298,20 +308,20 @@ class Classification:
         val_accuracy, val_precision, val_recall, val_fscore = self.accuracy_precision_recall_fscore(y_val, val_pred)
         df = pd.DataFrame({
             'train_accuracy': train_accuracy,
-            'test_accuracy': test_accuracy,
             'val_accuracy': val_accuracy,
+            'test_accuracy': test_accuracy,
 
             'train_precision': train_precision,
-            'test_precision': test_precision,
             'val_precision': val_precision,
+            'test_precision': test_precision,
             
             'train_recall': train_recall,
-            'test_recall': test_recall,
             'val_recall': val_recall,
+            'test_recall': test_recall,
             
             'train_fscore': train_fscore,
-            'test_fscore': test_fscore,
             'val_fscore': val_fscore,
+            'test_fscore': test_fscore,
             }, 
             index=['CatBoostClassifier'])
         return df

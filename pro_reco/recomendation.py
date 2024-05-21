@@ -167,19 +167,19 @@ with st.spinner('Wait for it...'):
                         # st.subheader('Score')
                         # st.dataframe(model_compare_clf)
 
-
-                        st.write(model_compare_clf)
+                        model_compare_clf.drop(['train_accuracy', 'train_precision', 'train_recall', 'train_fscore'], axis=1, inplace=True)
+                        st.write(model_compare_clf.sort_values(by=['test_fscore'], ascending=False))
                         # st.dataframe(model_compare_clf.style.highlight_max(axis=0))
                        
 
                         with st.container(): # accuracy
-                            col1, col2, col3, col4 = st.columns(4)
-                            with col1:
-                                st.subheader('train_accuracy')
-                                st.bar_chart(model_compare_clf['train_accuracy'])
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_accuracy')
+                            #     st.bar_chart(model_compare_clf['train_accuracy'])
                             
                             with col2:
-                                st.subheader('val_accuracy')
+                                st.subheader('validation_accuracy')
                                 st.bar_chart(model_compare_clf['val_accuracy'])
                             
                             with col3:
@@ -188,17 +188,17 @@ with st.spinner('Wait for it...'):
                             
                             with col4:
                                 st.subheader('accuracy table')
-                                st.dataframe(model_compare_clf[['train_accuracy', 'val_accuracy', 'test_accuracy']])
+                                st.dataframe(model_compare_clf[['val_accuracy', 'test_accuracy']].sort_values(by=['test_accuracy'], ascending=False))
 
 
                         with st.container(): # precision
-                            col1, col2, col3, col4 = st.columns(4)
-                            with col1:
-                                st.subheader('train_precision')
-                                st.bar_chart(model_compare_clf['train_precision'])
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_precision')
+                            #     st.bar_chart(model_compare_clf['train_precision'])
                             
                             with col2:
-                                st.subheader('val_precision')
+                                st.subheader('validation_precision')
                                 st.bar_chart(model_compare_clf['val_precision'])
                             
                             with col3:
@@ -207,16 +207,16 @@ with st.spinner('Wait for it...'):
                             
                             with col4:
                                 st.subheader('precision table')
-                                st.dataframe(model_compare_clf[['train_precision', 'val_precision', 'test_precision']])
+                                st.dataframe(model_compare_clf[['val_precision', 'test_precision']].sort_values(by=['test_precision'], ascending=False))
 
                         with st.container(): # recall
-                            col1, col2, col3, col4 = st.columns(4)
-                            with col1:
-                                st.subheader('train_recall')
-                                st.bar_chart(model_compare_clf['train_recall'])
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_recall')
+                            #     st.bar_chart(model_compare_clf['train_recall'])
                             
                             with col2:
-                                st.subheader('val_recall')
+                                st.subheader('validation_recall')
                                 st.bar_chart(model_compare_clf['val_recall'])
                             
                             with col3:
@@ -225,25 +225,25 @@ with st.spinner('Wait for it...'):
                             
                             with col4:
                                 st.subheader('recall table')
-                                st.dataframe(model_compare_clf[['train_recall', 'val_recall', 'test_recall']])
+                                st.dataframe(model_compare_clf[['val_recall', 'test_recall']].sort_values(by=['test_recall'], ascending=False))
 
                         with st.container(): # fscore
-                            col1, col2, col3, col4 = st.columns(4)
-                            with col1:
-                                st.subheader('train_fscore')
-                                st.bar_chart(model_compare_clf['train_fscore'])
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_fscore')
+                            #     st.bar_chart(model_compare_clf['train_fscore'])
                             
                             with col2:
-                                st.subheader('val_fscore')
+                                st.subheader('validation_f1_score')
                                 st.bar_chart(model_compare_clf['val_fscore'])
                             
                             with col3:
-                                st.subheader('test_fscore')
+                                st.subheader('test_f1_score')
                                 st.bar_chart(model_compare_clf['test_fscore'])
                             
                             with col4:
-                                st.subheader('fscore table')
-                                st.dataframe(model_compare_clf[['train_fscore', 'val_fscore', 'test_fscore']])
+                                st.subheader('f1_score table')
+                                st.dataframe(model_compare_clf[['val_fscore', 'test_fscore']].sort_values(by=['test_fscore'], ascending=False))
                         
                         
             if option == '회귀':
