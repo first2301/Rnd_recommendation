@@ -41,16 +41,55 @@ class Datasets:
 class RandomForestClf(Datasets):
     def __init__(self, df, target, n_trials=50):
         super().__init__(df, target, n_trials)
+
     def model(self, trial):
-        max_depth = trial.suggest_int("rf_max_depth", 2, 32, log=True)
+        max_depth = trial.suggest_int("max_depth", 2, 32, log=True)
         model = RandomForestClassifier(max_depth=max_depth, n_estimators=10)
         return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
     
     def run_model(self):
         self.optimizer(self.model)
         return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
+
+class GradientBoostingClf(Datasets):
+    def __init__(self, df, target, n_trials=50):
+        super().__init__(df, target, n_trials)
+        
+    def model(self, trial):
+        max_depth = trial.suggest_int("max_depth", 2, 32, log=True)
+        model = GradientBoostingClassifier(max_depth=max_depth, n_estimators=10)
+        return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
     
+    def run_model(self):
+        self.optimizer(self.model)
+        return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
     
+class XgbClf(Datasets):
+    def __init__(self, df, target, n_trials=50):
+        super().__init__(df, target, n_trials)
+        
+    def model(self, trial):
+        max_depth = trial.suggest_int("max_depth", 2, 32, log=True)
+        model = XGBClassifier(max_depth=max_depth, n_estimators=10)
+        return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
+    
+    def run_model(self):
+        self.optimizer(self.model)
+        return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
+    
+class CatBoostClf(Datasets):
+    def __init__(self, df, target, n_trials=50):
+        super().__init__(df, target, n_trials)
+        
+    def model(self, trial):
+        max_depth = trial.suggest_int("max_depth", 2, 32, log=True)
+        model = CatBoostClassifier(max_depth=max_depth, n_estimators=10)
+        return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
+    
+    def run_model(self):
+        self.optimizer(self.model)
+        return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
+
 class AdaboostClf(Datasets):
     def __init__(self, df, target, n_trials=10):
         super().__init__(df, target, n_trials)
@@ -66,6 +105,62 @@ class AdaboostClf(Datasets):
     def run_model(self):
         self.optimizer(self.model)
         return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
+
+class KNeighborsClf(Datasets):
+    def __init__(self, df, target, n_trials=10):
+        super().__init__(df, target, n_trials)
+
+    def model(self, trial):
+        n_neighbors = trial.suggest_int('n_neighbors', 1, 20)
+        model = KNeighborsClassifier(n_neighbors=n_neighbors)
+        
+        return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
+    
+    def run_model(self):
+        self.optimizer(self.model)
+        return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
+
+class Gaussian(Datasets):
+    def __init__(self, df, target, n_trials=10):
+        super().__init__(df, target, n_trials)
+
+    def model(self, trial):
+        n_neighbors = trial.suggest_int('n_neighbors', 1, 20)
+        model = GaussianNB(n_neighbors=n_neighbors)
+        
+        return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
+    
+    def run_model(self):
+        self.optimizer(self.model)
+        return {'best_trial': self.study.best_trial, 'trials': self.study.get_trials()}
+
+
+class ClassificationModels:
+    def __init__(self, df, target, n_trials=10):
+        self.df = df
+        self.target = target
+        self.n_trials = n_trials 
+
+    def ml_models(self):
+        # datasets = {'df': self.df, 'target': self.target, 'n_trials': self.n_trials}
+        randomforest_clf_model = RandomForestClf(self.df, self.target, n_trials=10)
+        # randomforest_clf_model = RandomForestClf(**datasets)
+        # gradientboost_clf_model = GradientBoostingClf(**datasets)
+        # xgboost_clf_model = XgbClf(**datasets)
+        # catboost_clf_model = CatBoostClf(**datasets)
+
+        total_result = dict()        
+        randomforest_clf_result = randomforest_clf_model.run_model()
+        # gradientboost_clf_result = gradientboost_clf_model.run_model()
+        # xgboost_clf_result = xgboost_clf_model.run_model()
+        # catboost_clf_result = catboost_clf_model.run_model()
+        
+        total_result['1'] = randomforest_clf_result
+        # total_result['2'] = gradientboost_clf_result
+        # total_result['3'] = xgboost_clf_result
+        # total_result['4'] = catboost_clf_result
+
+        return total_result
 
 
 
