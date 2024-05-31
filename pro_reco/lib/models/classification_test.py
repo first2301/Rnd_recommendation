@@ -44,7 +44,7 @@ class ClassificationModels:
         def model(self, trial):
             max_depth = trial.suggest_int("max_depth", self.start_max_depth, self.end_max_depth)
             n_estimator = trial.suggest_int("n_estimator", self.start_n_estimator, self.end_n_estimator)
-            model = RandomForestClassifier(max_depth=max_depth, n_estimators=n_estimator)
+            model = RandomForestClassifier(max_depth=max_depth, n_estimators=n_estimator, n_jobs=-1)
             return cross_val_score(model, self.X, self.y, cv=5, scoring='accuracy').mean()
         
         def run_model(self):
@@ -147,13 +147,13 @@ class ClassificationModels:
 
     def run_clf_models(self):
         total_results = dict()
-        total_results[1] = self.random_clf_model.run_model()
-        total_results[2] = self.gradientboost_clf_model.run_model()
-        total_results[3] = self.xgboost_clf_model.run_model()
-        total_results[4] = self.catboost_clf_model.run_model()
-        total_results[5] = self.adaboost_clf_model.run_model()
-        total_results[6] = self.knn_clf_model.run_model()
-        total_results[7] = self.gaussian_clf_model.run_model()
+        total_results[0] = self.random_clf_model.run_model()
+        total_results[1] = self.gradientboost_clf_model.run_model()
+        total_results[2] = self.xgboost_clf_model.run_model()
+        total_results[3] = self.catboost_clf_model.run_model()
+        total_results[4] = self.adaboost_clf_model.run_model()
+        total_results[5] = self.knn_clf_model.run_model()
+        total_results[6] = self.gaussian_clf_model.run_model()
 
 
         return total_results

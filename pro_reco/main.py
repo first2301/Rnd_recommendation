@@ -2,19 +2,16 @@
 # uvicorn main:app --reload
 # uvicorn main:app --reload --port 8001
 from fastapi import FastAPI, Request
-# from lib.anomaly_lib import *
-# from lib.pycaret_clf import *
-# from pycaret.anomaly import AnomalyExperiment
-# from pycaret.classification import ClassificationExperiment
 from fastapi.responses import JSONResponse
+from io import StringIO
+from lib.models.classification import ClassificationModels
+from lib.models.regression import RegressionModels
+from lib.prepro import Preprocessing
 import pandas as pd
-# import numpy as np
 import json
 # import ray
-from io import StringIO
-# from lib.ml_engine import Classification, Regression
-from lib.ml_engine_tune import Classification, Regression
-# from lib.ml_engine_tune import RegressionCurv
+
+
 app = FastAPI()
 
 @app.get('/') # server test
@@ -32,10 +29,11 @@ async def new_clf(request: Request):
     #     ray.init()
 
     # clf_compare = Classification(X=df, y=df[target]).train_clf()
-    clf_compare = Classification(df, target).clf_run()
+    clf_models_data = ClassificationModels(df, target, n_trials=10).run_clf_models()
+    prepro_data = Preprocessing().make_dict(clf_models_data)
     # ray.shutdown()
     # df_to_json = clf_compare.to_json()
-    dumps_data = json.dumps(clf_compare)
+    dumps_data = json.dumps(prepro_data)
     result_data = json.loads(dumps_data)
     print('result_data: ', result_data)
     return JSONResponse(content={'result': result_data})
@@ -45,7 +43,7 @@ async def new_reg(request: Request):
     data = await request.json()
     df = pd.read_json(StringIO(data['json_data']))
     target = data['target']
-    clf_compare = Regression(X=df, y=df[target]).train_reg()
+    clf_compare = RegressionModels(X=df, y=df[target]).train_reg()
     dumps_data = json.dumps(clf_compare)
     result_data = json.loads(dumps_data)
     print('result_data: ', result_data)

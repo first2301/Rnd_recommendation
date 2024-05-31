@@ -6,7 +6,7 @@
 # import time # 코드 실행 시간 측정 시 사용
 # sqlite:///./database/database.db
 # AxiosError: Request failed with status code 403 in streamlit 발생 시, enableXsrfProtection 입력하여 실행
-# streamlit run recomendation.py--server.enableXsrfProtection false
+# streamlit run recomendation.py --server.enableXsrfProtection false
 import ray
 import json
 import requests
@@ -150,7 +150,6 @@ with st.spinner('Wait for it...'):
                     if response.status_code == 200: 
                         json_data = response.json() 
                         # model_compare_clf = json_data['result']
-
                         data = json.loads(json_data['result'])
                         model_compare_clf = pd.DataFrame(data, index= ['RandomForestClassifier', 'GradientBoostingClassifier', 'XGBClassifier', 'KNeighborsClassifier', 
                                                                         'AdaBoostClassifier', 'GaussianNB', 'QuadraticDiscriminantAnalysis', 'LinearDiscriminantAnalysis', 'CatBoostClassifier'])

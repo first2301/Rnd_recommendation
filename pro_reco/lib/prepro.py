@@ -33,7 +33,6 @@ class Preprocessing:
         best_params_df = best_trial_df['params'].apply(pd.Series)
         best_trial_df = pd.concat([best_trial_df.drop(columns=['params']), best_params_df], axis=1)
         return best_trial_df
-    
     def is_all_trials_df(self, trials):
         trials_df = pd.DataFrame([{
                             'number': t.number,
@@ -43,7 +42,15 @@ class Preprocessing:
                             'datetime_start': t.datetime_start,
                             'datetime_complete': t.datetime_complete,
                         } for t in trials])
-
         trials_params_df = trials_df['params'].apply(pd.Series)
         trials_df = pd.concat([trials_df.drop(columns=['params']), trials_params_df], axis=1)
         return trials_df
+        
+    def make_dict(self, result):
+        trial_df = dict()
+        best_df = dict()
+        for n in range(0, len(result)):
+            best_df[n] = self.is_best_trial_df(result[n]['best_trial']).to_json()
+            trial_df[n] = self.is_all_trials_df(result[n]['trials']).to_json()
+
+        return {'best_df': best_df, 'trial_df': trial_df}
