@@ -32,11 +32,10 @@ async def new_clf(request: Request):
     clf_models_data = ClassificationModels(df, target, n_trials=10).run_clf_models()
     prepro_data = Preprocessing().make_dict(clf_models_data)
     # ray.shutdown()
-    # df_to_json = clf_compare.to_json()
     dumps_data = json.dumps(prepro_data)
-    result_data = json.loads(dumps_data)
-    print('result_data: ', result_data)
-    return JSONResponse(content={'result': result_data})
+    # result_data = json.loads(dumps_data)
+    print('result_data: ', dumps_data)
+    return JSONResponse(content={'result': dumps_data})
 
 @app.post('/new_reg')
 async def new_reg(request: Request):
@@ -45,14 +44,14 @@ async def new_reg(request: Request):
     target = data['target']
     clf_compare = RegressionModels(X=df, y=df[target]).train_reg()
     dumps_data = json.dumps(clf_compare)
-    result_data = json.loads(dumps_data)
-    print('result_data: ', result_data)
-    return JSONResponse(content={'result': result_data})
+    # result_data = json.loads(dumps_data)
+    print('result_data: ', dumps_data)
+    return JSONResponse(content={'result': dumps_data})
 
 
 # @app.post('/reg_curv')
 # async def new_reg(request: Request):
-#     data = await request.json()
+#     data = await request.json()``
 #     df = pd.read_json(StringIO(data['json_data']))
 #     target = data['target']
 #     clf_compare = RegressionCurv(X=df, y=df[target]).train_reg()

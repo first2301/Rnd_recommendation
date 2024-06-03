@@ -152,70 +152,103 @@ with st.spinner('Wait for it...'):
                         json_data = response.json() 
                         # model_compare_clf = json_data['result']
                         data = json.loads(json_data['result'])
-                        
-                        # st.write('data',data)
-                        model_list = ['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian']
-                        
-                        # temp_df = pd.DataFrame([], columns=['accuracy'],index=['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian'])
-                        temp_best_df = pd.DataFrame()
-                        temp_trial_df = pd.DataFrame()
-                        # best_df = pd.DataFrame()
-                        for name in model_list:
-                            loaded_best_data = json.loads(data['best_df'][name])
-                            loaded_trial_data = json.loads(data['trial_df'][name])
-                            # best score
-                            loaded_best_df = pd.DataFrame(loaded_best_data)
-                            loaded_best_series = loaded_best_df['value']
-                            temp_best_df = pd.concat([temp_best_df, loaded_best_series])
-                            # trial score
+                        model_compare_clf = pd.DataFrame(data, index= ['RandomForestClassifier', 'GradientBoostingClassifier', 'XGBClassifier', 'KNeighborsClassifier', 
+                                                                        'AdaBoostClassifier', 'GaussianNB', 'QuadraticDiscriminantAnalysis', 'LinearDiscriminantAnalysis', 'CatBoostClassifier'])
+                       
 
-                            # loaded_trial_df = pd.DataFrame(loaded_trial_data)
-                            # loaded_trial_series = loaded_trial_df['value']
-                            # temp_trial_df = pd.concat([temp_trial_df, loaded_trial_series], axis=1)
+                        # tab_line, tab_bar = st.tabs(['Line Chart', 'Bar Chart']) # 분류모델 학습 결과 시각화                        
+                        # with tab_line:
+                        #     st.subheader('Line Chart')
+                        #     st.line_chart(model_compare_clf)
+                        # with tab_bar:
+                        #     st.subheader('Bar Chart')
+                        #     st.bar_chart(model_compare_clf)
 
-                            loaded_trial_df = pd.DataFrame(loaded_trial_data)
-                            loaded_trial_series = loaded_trial_df['value']
-                            temp_trial_df[name + '_accuracy'] = loaded_trial_series
+                        # st.subheader('Score')
+                        # st.dataframe(model_compare_clf)
 
-                        temp_best_df.columns = ['best_accuracy']
-                        temp_best_df.index = model_list
+                        model_compare_clf.drop(['train_accuracy', 'train_precision', 'train_recall', 'train_fscore'], axis=1, inplace=True)
+                        sorted_by_f1score = model_compare_clf.sort_values(by=['test_fscore'], ascending=False)
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.bar_chart(sorted_by_f1score[:1][['test_accuracy', 'test_precision', 'test_recall', 'test_fscore']].T)
+                        with col2:                     
+                            st.write(sorted_by_f1score)
+                        # st.dataframe(model_compare_clf.style.highlight_max(axis=0))
+                       
 
-                        with st.container():
-                            st.subheader('accuracy')
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                tab1, tab2 = st.tabs(['accuracy_bar_chart', 'accuracy_line_chart'])
-                                with tab1:
-                                    st.bar_chart(temp_best_df)
-                                with tab2:
-                                    st.line_chart(temp_trial_df)
-
+                        with st.container(): # accuracy
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_accuracy')
+                            #     st.bar_chart(model_compare_clf['train_accuracy'])
+                            
                             with col2:
-                                tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
-                                with tab1:
-                                    num_rows_to_display = 7  # 원하는 행의 수
-                                    row_height = 50  # 각 행의 높이
-                                    total_height = num_rows_to_display * row_height
-                                    st.dataframe(temp_trial_df,  height=total_height)
-                                with tab2:
-                                    st.write(temp_best_df)
-
-                        # col1, col2 = st.columns(2)
-                        # tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
-                        # with tab1:
-                        #     st.write(temp_trial_df)
-                        # with tab2:
-                        #     st.write(temp_best_df)
-                        
-                        # temp_trial_df.columns = ['accuracy']
-                        # temp_trial_df.index = model_list
+                                st.subheader('validation_accuracy')
+                                st.bar_chart(model_compare_clf['val_accuracy'])
+                            
+                            with col3:
+                                st.subheader('test_accuracy')
+                                st.bar_chart(model_compare_clf['test_accuracy'])
+                            
+                            with col4:
+                                st.subheader('accuracy table')
+                                st.dataframe(model_compare_clf[['val_accuracy', 'test_accuracy']].sort_values(by=['test_accuracy'], ascending=False))
 
 
-                        # st.write(temp_trial_df)
-                        
-             
-                        
-                        
+                        with st.container(): # precision
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_precision')
+                            #     st.bar_chart(model_compare_clf['train_precision'])
+                            
+                            with col2:
+                                st.subheader('validation_precision')
+                                st.bar_chart(model_compare_clf['val_precision'])
+                            
+                            with col3:
+                                st.subheader('test_precision')
+                                st.bar_chart(model_compare_clf['test_precision'])
+                            
+                            with col4:
+                                st.subheader('precision table')
+                                st.dataframe(model_compare_clf[['val_precision', 'test_precision']].sort_values(by=['test_precision'], ascending=False))
+
+                        with st.container(): # recall
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_recall')
+                            #     st.bar_chart(model_compare_clf['train_recall'])
+                            
+                            with col2:
+                                st.subheader('validation_recall')
+                                st.bar_chart(model_compare_clf['val_recall'])
+                            
+                            with col3:
+                                st.subheader('test_recall')
+                                st.bar_chart(model_compare_clf['test_recall'])
+                            
+                            with col4:
+                                st.subheader('recall table')
+                                st.dataframe(model_compare_clf[['val_recall', 'test_recall']].sort_values(by=['test_recall'], ascending=False))
+
+                        with st.container(): # fscore
+                            col2, col3, col4 = st.columns(3)
+                            # with col1:
+                            #     st.subheader('train_fscore')
+                            #     st.bar_chart(model_compare_clf['train_fscore'])
+                            
+                            with col2:
+                                st.subheader('validation_f1_score')
+                                st.bar_chart(model_compare_clf['val_fscore'])
+                            
+                            with col3:
+                                st.subheader('test_f1_score')
+                                st.bar_chart(model_compare_clf['test_fscore'])
+                            
+                            with col4:
+                                st.subheader('f1_score table')
+                                st.dataframe(model_compare_clf[['val_fscore', 'test_fscore']].sort_values(by=['test_fscore'], ascending=False))
                         
                         
             if option == '회귀':

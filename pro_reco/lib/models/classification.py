@@ -4,6 +4,7 @@ from catboost import CatBoostClassifier
 from xgboost import XGBClassifier
 from sklearn.naive_bayes import GaussianNB
 from sklearn.model_selection import cross_val_score
+import numpy as np
 import optuna
 
 class ClassificationModels:
@@ -14,7 +15,7 @@ class ClassificationModels:
             self.target = target
             self.n_trials = n_trials
             self.X = df.drop(target, axis=1)
-            self.y = df[target]
+            self.y = np.ravel(df[target])
             self.models = models
             # tree based models params info
             self.start_n_estimator = 10
@@ -147,21 +148,21 @@ class ClassificationModels:
 
     def run_clf_models(self):
         total_results = dict()
-        # total_results['randomforest'] = self.random_clf_model.run_model()
-        # total_results['gradient'] = self.gradientboost_clf_model.run_model()
-        # total_results['xgboost'] = self.xgboost_clf_model.run_model()
-        # total_results['catboost'] = self.catboost_clf_model.run_model()
-        # total_results['adaboost'] = self.adaboost_clf_model.run_model()
-        # total_results['knn'] = self.knn_clf_model.run_model()
-        # total_results['gaussian'] = self.gaussian_clf_model.run_model()
+        total_results['randomforest'] = self.random_clf_model.run_model()
+        total_results['gradient'] = self.gradientboost_clf_model.run_model()
+        total_results['xgboost'] = self.xgboost_clf_model.run_model()
+        total_results['catboost'] = self.catboost_clf_model.run_model()
+        total_results['adaboost'] = self.adaboost_clf_model.run_model()
+        total_results['knn'] = self.knn_clf_model.run_model()
+        total_results['gaussian'] = self.gaussian_clf_model.run_model()
 
-        total_results[0] = self.random_clf_model.run_model()
-        total_results[1] = self.gradientboost_clf_model.run_model()
-        total_results[2] = self.xgboost_clf_model.run_model()
-        total_results[3] = self.catboost_clf_model.run_model()
-        total_results[4] = self.adaboost_clf_model.run_model()
-        total_results[5] = self.knn_clf_model.run_model()
-        total_results[6] = self.gaussian_clf_model.run_model()
+        # total_results[0] = self.random_clf_model.run_model()
+        # total_results[1] = self.gradientboost_clf_model.run_model()
+        # total_results[2] = self.xgboost_clf_model.run_model()
+        # total_results[3] = self.catboost_clf_model.run_model()
+        # total_results[4] = self.adaboost_clf_model.run_model()
+        # total_results[5] = self.knn_clf_model.run_model()
+        # total_results[6] = self.gaussian_clf_model.run_model()
 
 
         return total_results

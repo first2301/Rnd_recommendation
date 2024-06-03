@@ -33,6 +33,7 @@ class Preprocessing:
         best_params_df = best_trial_df['params'].apply(pd.Series)
         best_trial_df = pd.concat([best_trial_df.drop(columns=['params']), best_params_df], axis=1)
         return best_trial_df
+    
     def is_all_trials_df(self, trials):
         trials_df = pd.DataFrame([{
                             'number': t.number,
@@ -49,8 +50,24 @@ class Preprocessing:
     def make_dict(self, result):
         trial_df = dict()
         best_df = dict()
-        for n in range(0, len(result)):
+        model_list = ['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian']
+        
+        for n in model_list:
             best_df[n] = self.is_best_trial_df(result[n]['best_trial']).to_json()
             trial_df[n] = self.is_all_trials_df(result[n]['trials']).to_json()
 
+        # for n in range(0, len(result)):
+        #     best_df[n] = self.is_best_trial_df(result[n]['best_trial']).to_json()
+        #     trial_df[n] = self.is_all_trials_df(result[n]['trials']).to_json()
+
         return {'best_df': best_df, 'trial_df': trial_df}
+    
+    def make_dataframe(self, result):
+        best_df = pd.DataFrame()
+        model_list = ['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian']
+        
+        for n in model_list:
+            temp_df = self.is_best_trial_df(result[n]['best_trial'])
+            best_df = pd.concat([best_df, ])
+
+        return best_df
