@@ -184,7 +184,7 @@ with st.spinner('Wait for it...'):
                             st.subheader('accuracy')
                             col1, col2 = st.columns(2)
                             with col1:
-                                tab1, tab2 = st.tabs(['accuracy_bar_chart', 'accuracy_line_chart'])
+                                tab1, tab2 = st.tabs(['Best_accuracy_bar_chart', 'Trial_accuracy_line_chart'])
                                 with tab1:
                                     st.bar_chart(temp_best_df)
                                 with tab2:
@@ -211,12 +211,7 @@ with st.spinner('Wait for it...'):
                         # temp_trial_df.index = model_list
 
 
-                        # st.write(temp_trial_df)
-                        
-             
-                        
-                        
-                        
+                        # st.write(temp_trial_df)          
                         
             if option == '회귀':
                 st.subheader('머신러닝 학습 결과')
@@ -228,34 +223,38 @@ with st.spinner('Wait for it...'):
                     data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
 
-                    # response = requests.post('http://127.0.0.1:8001/clf', json=data)
                     response = requests.post('http://127.0.0.1:8001/new_reg', json=data) 
-                    # response = requests.post('http://127.0.0.1:8001/reg_curv', json=data)
-
+                     
                     if response.status_code == 200: 
                         json_data = response.json() # NIPA 서버에서 학습한 데이터를 json으로 response 
                         # model_compare_clf = json_data['result']
                         data = json.loads(json_data['result'])
                         # st.write(data)
-                        model_compare_clf = pd.DataFrame(data, index=['XGBRegressor', 'RandomForestRegressor', 'AdaBoostRegressor',
-                                                                      'GradientBoostingRegressor', 'Ridge', 'Lasso', 'ElasticNet'])
-                        with st.container():
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.subheader('mean_absolute_error')
-                                st.bar_chart(model_compare_clf['mean_absolute_error'])
-                            with col2:
-                                st.subheader('mean_absolute_error')
-                                st.dataframe(model_compare_clf['mean_absolute_error'])
+                        st.write(data)
+                    else:
+                        st.write("Error:", response.status_code)
 
-                        with st.container():
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.subheader('mean_squared_error')
-                                st.bar_chart(model_compare_clf['mean_squared_error'])
-                            with col2:
-                                st.subheader('mean_squared_error')
-                                st.dataframe(model_compare_clf['mean_squared_error'])
+                        # model_compare_clf = pd.DataFrame(data, index=['XGBRegressor', 'RandomForestRegressor', 'AdaBoostRegressor',
+                        #                                               'GradientBoostingRegressor', 'Ridge', 'Lasso', 'ElasticNet'])
+
+
+                        # with st.container():
+                        #     col1, col2 = st.columns(2)
+                        #     with col1:
+                        #         st.subheader('mean_absolute_error')
+                        #         st.bar_chart(model_compare_clf['mean_absolute_error'])
+                        #     with col2:
+                        #         st.subheader('mean_absolute_error')
+                        #         st.dataframe(model_compare_clf['mean_absolute_error'])
+
+                        # with st.container():
+                        #     col1, col2 = st.columns(2)
+                        #     with col1:
+                        #         st.subheader('mean_squared_error')
+                        #         st.bar_chart(model_compare_clf['mean_squared_error'])
+                        #     with col2:
+                        #         st.subheader('mean_squared_error')
+                        #         st.dataframe(model_compare_clf['mean_squared_error'])
                         # ray.shutdown() # 머신러닝 모델 분산 학습 종료
            
             if option == '이상탐지':
