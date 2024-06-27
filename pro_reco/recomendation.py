@@ -230,7 +230,64 @@ with st.spinner('Wait for it...'):
                         # model_compare_clf = json_data['result']
                         data = json.loads(json_data['result'])
                         # st.write(data)
-                        st.write(data)
+
+                        # st.write(data)
+                        mse_best_df = pd.read_json(data['0']['best']) # mse_best_df
+                        mse_trial_df = pd.read_json(data['0']['trial']) # mse_trial_df
+                        mae_best_df = pd.read_json(data['1']['best']) # mae_best_df
+                        mae_trial_df = pd.read_json(data['1']['trial']) # mae_trial_df
+
+                        max_mse_value = mse_best_df.max()
+                        # max_mse_index = mse_best_df.index[mse_best_df['neg_mean_squared_error'] == max_mse_value].tolist()
+                        # max_mse_indices = [idx for idx, val in mse_best_df['neg_mean_squared_error'].items() if val == max_mse_value]
+                        # max_mse_index_str = ', '.join(max_mse_indices)
+
+                        max_mae_value = mae_best_df.max()
+                        # max_mae_index = mae_best_df.index[mae_best_df['neg_mean_squared_error'] == max_mae_value].tolist()
+                        # max_mae_indices = [idx for idx, val in mae_best_df['neg_mean_absolute_error'].items() if val == max_mse_value]
+                        # max_mae_index_str = ', '.join(max_mae_indices)
+
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.metric(label='mse', value=max_mse_value)
+                        with col2:
+                            st.metric(label='mae', value=max_mae_value)
+
+                        with st.container():
+                            # st.subheader('mean_squared_error')
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.subheader('best_mean_squared_error')
+                                in_col1, in_col2 = st.columns(2)
+                                with in_col1:
+                                    st.bar_chart(mse_best_df)
+                                with in_col2:
+                                    st.write(mse_best_df)
+                            with col2:
+                                st.subheader('best_mean_absolute_error')
+                                in_col1, in_col2 = st.columns(2)
+                                with in_col1:
+                                    st.bar_chart(mae_best_df)
+                                with in_col2:
+                                    st.write(mae_best_df)
+
+                        with st.container():
+                            st.subheader('all_mean_squared_error')
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.line_chart(mse_trial_df)
+                            with col2:
+                                st.write(mse_trial_df)
+                                
+                        with st.container():
+                            st.subheader('all_mean_absolute_error')
+                            col1, col2 = st.columns(2)
+                            with col1:
+                                st.line_chart(mae_trial_df)
+                            with col2:
+                                st.write(mae_trial_df)
+
+
                     else:
                         st.write("Error:", response.status_code)
 

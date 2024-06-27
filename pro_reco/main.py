@@ -5,7 +5,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from io import StringIO
 from lib.models.classification import ClassificationModels
-from lib.models.regression import RegressionModels
+from lib.models.regression import RegressionModels, compare_reg_models
 from lib.prepro import Preprocessing
 import pandas as pd
 import json
@@ -54,7 +54,8 @@ async def new_reg(request: Request):
     data = await request.json()
     df = pd.read_json(StringIO(data['json_data']))
     target = data['target']
-    reg_compare = RegressionModels(df, target, n_trials=10).run_reg_models()
+    # reg_compare = RegressionModels(df, target, n_trials=10).run_reg_models()
+    reg_compare = compare_reg_models(df, target, n_trials=5)
     dumps_data = json.dumps(reg_compare)
     print('result_data: ', dumps_data)
     return JSONResponse(content={'result': dumps_data})
