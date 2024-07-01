@@ -146,61 +146,89 @@ with st.spinner('Wait for it...'):
                     json_data = updated_df.to_json() # pandas DataFrame를 json 형태로 변환
                     data_dump = json.dumps({'json_data':json_data, 'target': target_feture}) # 학습 데이터, Target Data 객체를 문자열로 직렬화(serialize)
                     data = json.loads(data_dump) # json을 파이썬 객체로 변환
-
-                    # response = requests.post('http://127.0.0.1:8001/clf', json=data)
                     response = requests.post('http://127.0.0.1:8001/new_clf', json=data) 
                     if response.status_code == 200: 
                         json_data = response.json() 
-                        # model_compare_clf = json_data['result']
                         data = json.loads(json_data['result'])
+                        #     0. accuracy 1. recall 2. precision 3. f1_weighted
+                        accuracy_best_df = pd.read_json(StringIO(data['0']['best']))
+                        accuracy_trial_df = pd.read_json(StringIO(data['0']['trial']))
+
+                        recall_best_df = pd.read_json(StringIO(data['1']['best']))
+                        recall_trial_df = pd.read_json(StringIO(data['1']['trial']))
                         
+                        precision_best_df = pd.read_json(StringIO(data['2']['best']))
+                        precision_trial_df = pd.read_json(StringIO(data['2']['trial']))
+
+                        f1score_best_df = pd.read_json(StringIO(data['3']['best']))
+                        f1score_trial_df = pd.read_json(StringIO(data['3']['trial']))
+
+                        template.print_best_result(
+                            'Best_accuracy', 'Best_recall', 'Best_precision', 'Best_f1_score',
+                            accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df
+                        )
+                        
+                        # template.print_best_result('Best_accuracy', 'Best_recall', accuracy_best_df, recall_best_df)
+                        # template.print_best_result('Best_precision', 'Best_f1_score', precision_best_df, f1score_best_df)
+
+                        template.print_trial_result(
+                            'Trial_accuracy', 'Trial_recall', 'Trial_precision', 'Trial_f1_score',
+                            accuracy_trial_df, recall_trial_df, precision_trial_df, f1score_trial_df
+                        )
+                        # template.print_trial_result('Trial_accuracy', 'Trial_recall', accuracy_trial_df, recall_trial_df)
+                        # template.print_trial_result('Trial_precision', 'Trial_f1_score', precision_trial_df, f1score_trial_df)
+
+                    else:
+                        st.write("Error:", response.status_code)
+
+###
                         # st.write('data',data)
-                        model_list = ['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian']
+                        # model_list = ['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian']
                         
-                        # temp_df = pd.DataFrame([], columns=['accuracy'],index=['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian'])
-                        temp_best_df = pd.DataFrame()
-                        temp_trial_df = pd.DataFrame()
-                        # best_df = pd.DataFrame()
-                        for name in model_list:
-                            loaded_best_data = json.loads(data['best_df'][name])
-                            loaded_trial_data = json.loads(data['trial_df'][name])
-                            # best score
-                            loaded_best_df = pd.DataFrame(loaded_best_data)
-                            loaded_best_series = loaded_best_df['value']
-                            temp_best_df = pd.concat([temp_best_df, loaded_best_series])
-                            # trial score
+                        # # temp_df = pd.DataFrame([], columns=['accuracy'],index=['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian'])
+                        # temp_best_df = pd.DataFrame()
+                        # temp_trial_df = pd.DataFrame()
+                        # # best_df = pd.DataFrame()
+                        # for name in model_list:
+                        #     loaded_best_data = json.loads(data['best_df'][name])
+                        #     loaded_trial_data = json.loads(data['trial_df'][name])
+                        #     # best score
+                        #     loaded_best_df = pd.DataFrame(loaded_best_data)
+                        #     loaded_best_series = loaded_best_df['value']
+                        #     temp_best_df = pd.concat([temp_best_df, loaded_best_series])
+                        #     # trial score
 
-                            # loaded_trial_df = pd.DataFrame(loaded_trial_data)
-                            # loaded_trial_series = loaded_trial_df['value']
-                            # temp_trial_df = pd.concat([temp_trial_df, loaded_trial_series], axis=1)
+                        #     # loaded_trial_df = pd.DataFrame(loaded_trial_data)
+                        #     # loaded_trial_series = loaded_trial_df['value']
+                        #     # temp_trial_df = pd.concat([temp_trial_df, loaded_trial_series], axis=1)
 
-                            loaded_trial_df = pd.DataFrame(loaded_trial_data)
-                            loaded_trial_series = loaded_trial_df['value']
-                            temp_trial_df[name + '_accuracy'] = loaded_trial_series
+                        #     loaded_trial_df = pd.DataFrame(loaded_trial_data)
+                        #     loaded_trial_series = loaded_trial_df['value']
+                        #     temp_trial_df[name + '_accuracy'] = loaded_trial_series
 
-                        temp_best_df.columns = ['best_accuracy']
-                        temp_best_df.index = model_list
+                        # temp_best_df.columns = ['best_accuracy']
+                        # temp_best_df.index = model_list
 
-                        with st.container():
-                            st.subheader('accuracy')
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                tab1, tab2 = st.tabs(['Best_accuracy_bar_chart', 'Trial_accuracy_line_chart'])
-                                with tab1:
-                                    st.bar_chart(temp_best_df)
-                                with tab2:
-                                    st.line_chart(temp_trial_df)
+                        # with st.container():
+                        #     st.subheader('accuracy')
+                        #     col1, col2 = st.columns(2)
+                        #     with col1:
+                        #         tab1, tab2 = st.tabs(['Best_accuracy_bar_chart', 'Trial_accuracy_line_chart'])
+                        #         with tab1:
+                        #             st.bar_chart(temp_best_df)
+                        #         with tab2:
+                        #             st.line_chart(temp_trial_df)
 
-                            with col2:
-                                tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
-                                with tab1:
-                                    num_rows_to_display = 7  # 원하는 행의 수
-                                    row_height = 50  # 각 행의 높이
-                                    total_height = num_rows_to_display * row_height
-                                    st.dataframe(temp_trial_df,  height=total_height)
-                                with tab2:
-                                    st.write(temp_best_df)
-
+                        #     with col2:
+                        #         tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
+                        #         with tab1:
+                        #             num_rows_to_display = 7  # 원하는 행의 수
+                        #             row_height = 50  # 각 행의 높이
+                        #             total_height = num_rows_to_display * row_height
+                        #             st.dataframe(temp_trial_df,  height=total_height)
+                        #         with tab2:
+                        #             st.write(temp_best_df)
+###
                         # col1, col2 = st.columns(2)
                         # tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
                         # with tab1:
@@ -233,10 +261,10 @@ with st.spinner('Wait for it...'):
                         # st.write(data)
 
                         # st.write(data)
-                        mse_best_df = pd.read_json(StringIO(data['0']['best'])).sort_values() # mse_best_df
-                        mse_trial_df = pd.read_json(StringIO(data['0']['trial'])).sort_values() # mse_trial_df
-                        mae_best_df = pd.read_json(StringIO(data['1']['best'])).sort_values() # mae_best_df
-                        mae_trial_df = pd.read_json(StringIO(data['1']['trial'])).sort_values() # mae_trial_df
+                        mse_best_df = pd.read_json(StringIO(data['0']['best'])) # mse_best_df
+                        mse_trial_df = pd.read_json(StringIO(data['0']['trial'])) # mse_trial_df
+                        mae_best_df = pd.read_json(StringIO(data['1']['best'])) # mae_best_df
+                        mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) # mae_trial_df
 
                         # max_mse_value = mse_best_df.max()
                         # min_mse_value = mse_best_df.min()

@@ -1,0 +1,8 @@
+﻿,precision
+randomforest,0.5187818459
+adaboost,0.1993939394
+gradientboost,0.5344388422
+KNeighbors,0.4602662769
+catboost,0.5549524162
+xgboost,0.5444410413
+GaussianNB,0.3939406997

@@ -25,7 +25,7 @@ class Template:
         DataFrame 확인을 위한 streamlit tab
         '''
         with tab_eda_df:
-            st.write('Original data')
+            # st.write('Original data')
             st.dataframe(self.df)
         with tab_eda_info:
             # template = Template(df)
@@ -54,3 +54,146 @@ class Template:
         sample_df = pd.DataFrame({'Label': ['Select Label Column'], # Sample Data
                                 'Counts': ['Select Label Column']})
         st.write(sample_df)
+
+    def print_best_result(
+            self, title_1, title_2, title_3, title_4, 
+            best_score_df_1, best_score_df_2, best_score_df_3, best_score_df_4
+            ):
+        '''
+        Insert title_1, title_2, best_score_df_1, best_score_df_2
+        '''
+        with st.container():
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.subheader(title_1)
+                in_col1, in_col2 = st.columns(2)
+                
+                with in_col1:
+                    st.bar_chart(best_score_df_1)
+                with in_col2:
+                    st.write(best_score_df_1)
+
+            with col2:
+                st.subheader(title_2)
+                in_col1, in_col2 = st.columns(2)
+                with in_col1:
+                    st.bar_chart(best_score_df_2)
+                with in_col2:
+                    st.write(best_score_df_2)
+
+            col1, col2 = st.columns(2)
+            with col1:
+                st.subheader(title_3)
+                in_col1, in_col2 = st.columns(2)
+                
+                with in_col1:
+                    st.bar_chart(best_score_df_3)
+                with in_col2:
+                    st.write(best_score_df_3)
+
+            with col2:
+                st.subheader(title_4)
+                in_col1, in_col2 = st.columns(2)
+                with in_col1:
+                    st.bar_chart(best_score_df_4)
+                with in_col2:
+                    st.write(best_score_df_4)
+
+        # with st.container():
+        #     col1, col2 = st.columns(2)
+        #     with col1:
+        #         st.subheader(title_1)
+        #         in_col1, in_col2 = st.columns(2)
+                
+        #         with in_col1:
+        #             st.bar_chart(best_score_df_1)
+        #         with in_col2:
+        #             st.write(best_score_df_1)
+        #     with col2:
+        #         st.subheader(title_2)
+        #         in_col1, in_col2 = st.columns(2)
+        #         with in_col1:
+        #             st.bar_chart(best_score_df_2)
+        #         with in_col2:
+        #             st.write(best_score_df_2)
+                    
+        # with st.container():
+        #     col1, col2 = st.columns(2)
+        #     with col2:
+        #         st.subheader(title_3)
+        #         in_col1, in_col2 = st.columns(2)
+        #         with in_col1:
+        #             st.bar_chart(best_score_df_3)
+        #         with in_col2:
+        #             st.write(best_score_df_3)
+        #     with col2:
+        #         st.subheader(title_4)
+        #         in_col1, in_col2 = st.columns(2)
+        #         with in_col1:
+        #             st.bar_chart(best_score_df_4)
+        #         with in_col2:
+        #             st.write(best_score_df_4)
+
+    def print_trial_result(
+            self, title_1, title_2, title_3, title_4,
+            trial_score_df_1, trial_score_df_2, trial_score_df_3, trial_score_df_4
+            ):
+        '''
+        Insert title_1, title_2, trial_score_df_1, trial_score_df_2
+        '''
+
+        with st.container():
+            st.subheader(title_1)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.line_chart(trial_score_df_1)
+            with col2:
+                st.write(trial_score_df_1)
+
+        with st.container():
+            st.subheader(title_2)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.line_chart(trial_score_df_2)
+            with col2:
+                st.write(trial_score_df_2)
+
+        with st.container():
+            st.subheader(title_3)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.line_chart(trial_score_df_3)
+            with col2:
+                st.write(trial_score_df_3)
+
+        with st.container():
+            st.subheader(title_4)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.line_chart(trial_score_df_4)
+            with col2:
+                st.write(trial_score_df_4)
+
+    # def print_trial_result(self, title_1, title_2, trial_score_df_1, trial_score_df_2):
+    #     '''
+    #     Insert title_1, title_2, trial_score_df_1, trial_score_df_2
+    #     '''
+    #     with st.container():
+    #     # st.subheader('mean_squared_error')
+    #         col1, col2 = st.columns(2)
+    #         with col1:
+    #             st.subheader(title_1)
+    #             in_col1, in_col2 = st.columns(2)
+                
+    #             with in_col1:
+    #                 st.line_chart(trial_score_df_1)
+    #             with in_col2:
+    #                 st.write(trial_score_df_1)
+    #         with col2:
+    #             st.subheader(title_2)
+    #             in_col1, in_col2 = st.columns(2)
+    #             with in_col1:
+    #                 st.line_chart(trial_score_df_2)
+    #             with in_col2:
+    #                 st.write(trial_score_df_2)

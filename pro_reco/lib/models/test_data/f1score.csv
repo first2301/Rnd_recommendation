@@ -1,0 +1,8 @@
+﻿,f1_weighted
+randomforest,0.5766828994000001
+adaboost,0.4039624699
+gradientboost,0.5739590284
+KNeighbors,0.5247428003
+catboost,0.5789357831
+xgboost,0.5892568736
+GaussianNB,0.4789457158
