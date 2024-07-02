@@ -163,20 +163,22 @@ with st.spinner('Wait for it...'):
                         f1score_best_df = pd.read_json(StringIO(data['3']['best']))
                         f1score_trial_df = pd.read_json(StringIO(data['3']['trial']))
 
+                        concat_df = pd.concat([accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df], axis=1)
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.scatter_chart(concat_df)
+                        with col2:
+                            st.dataframe(concat_df, use_container_width=True)
+
                         template.print_best_result(
                             'Best_accuracy', 'Best_recall', 'Best_precision', 'Best_f1_score',
                             accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df
                         )
-                        
-                        # template.print_best_result('Best_accuracy', 'Best_recall', accuracy_best_df, recall_best_df)
-                        # template.print_best_result('Best_precision', 'Best_f1_score', precision_best_df, f1score_best_df)
 
                         template.print_trial_result(
                             'Trial_accuracy', 'Trial_recall', 'Trial_precision', 'Trial_f1_score',
                             accuracy_trial_df, recall_trial_df, precision_trial_df, f1score_trial_df
                         )
-                        # template.print_trial_result('Trial_accuracy', 'Trial_recall', accuracy_trial_df, recall_trial_df)
-                        # template.print_trial_result('Trial_precision', 'Trial_f1_score', precision_trial_df, f1score_trial_df)
 
                     else:
                         st.write("Error:", response.status_code)
