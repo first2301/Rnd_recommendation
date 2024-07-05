@@ -16,6 +16,7 @@ from lib.template import Template
 from lib.prepro import Preprocessing
 from database.connector import Database # , SelectTB
 from io import StringIO
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
@@ -268,53 +269,56 @@ with st.spinner('Wait for it...'):
                         mae_best_df = pd.read_json(StringIO(data['1']['best'])) # mae_best_df
                         mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) # mae_trial_df
 
-                        # max_mse_value = mse_best_df.max()
-                        # min_mse_value = mse_best_df.min()
-                        
-                        # max_mae_value = mae_best_df.max()
-                        # min_mae_value = mae_best_df.min()
-            
-                        # col1, col2 = st.columns(2)
-                        # with col1:
-                        #     st.metric(label='Max mse', value=max_mse_value)   
-                        #     st.metric(label='Min mse', value=min_mse_value)
-                        # with col2:
-                        #     st.metric(label='Max mae', value=max_mae_value)
-                        #     st.metric(label='Min mae', value=min_mae_value)
+                        concat_reg_df = pd.concat([mse_best_df, mae_best_df], axis=1)
+                        col1, col2 = st.columns(2)
+                        with col1:
+                            st.scatter_chart(concat_reg_df)
+                        with col2:
+                            st.dataframe(concat_reg_df, use_container_width=True)
 
-                        with st.container():
-                            # st.subheader('mean_squared_error')
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.subheader('Best_mean_squared_error')
-                                in_col1, in_col2 = st.columns(2)
-                                with in_col1:
-                                    st.bar_chart(mse_best_df)
-                                with in_col2:
-                                    st.write(mse_best_df)
-                            with col2:
-                                st.subheader('Best_mean_absolute_error')
-                                in_col1, in_col2 = st.columns(2)
-                                with in_col1:
-                                    st.bar_chart(mae_best_df)
-                                with in_col2:
-                                    st.write(mae_best_df)
+                        template.print_reg_best_result(
+                            'Best_mean_squared_error', 'Best_mean_absolute_error',
+                            mse_best_df, mae_best_df
+                        )
 
-                        with st.container():
-                            st.subheader('All_mean_squared_error')
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.line_chart(mse_trial_df)
-                            with col2:
-                                st.write(mse_trial_df)
+                        template.print_reg_trial_result(
+                            'Trial_mean_squared_error', 'Trial_mean_absolute_error',
+                            mse_trial_df, mae_trial_df
+                        )
+
+                        # with st.container():
+                        #     # st.subheader('mean_squared_error')
+                        #     col1, col2 = st.columns(2)
+                        #     with col1:
+                        #         st.subheader('Best_mean_squared_error')
+                        #         in_col1, in_col2 = st.columns(2)
+                        #         with in_col1:
+                        #             st.bar_chart(mse_best_df)
+                        #         with in_col2:
+                        #             st.write(mse_best_df)
+                        #     with col2:
+                        #         st.subheader('Best_mean_absolute_error')
+                        #         in_col1, in_col2 = st.columns(2)
+                        #         with in_col1:
+                        #             st.bar_chart(mae_best_df)
+                        #         with in_col2:
+                        #             st.write(mae_best_df)
+
+                        # with st.container():
+                        #     st.subheader('All_mean_squared_error')
+                        #     col1, col2 = st.columns(2)
+                        #     with col1:
+                        #         st.line_chart(mse_trial_df)
+                        #     with col2:
+                        #         st.write(mse_trial_df)
                                 
-                        with st.container():
-                            st.subheader('All_mean_absolute_error')
-                            col1, col2 = st.columns(2)
-                            with col1:
-                                st.line_chart(mae_trial_df)
-                            with col2:
-                                st.write(mae_trial_df)
+                        # with st.container():
+                        #     st.subheader('All_mean_absolute_error')
+                        #     col1, col2 = st.columns(2)
+                        #     with col1:
+                        #         st.line_chart(mae_trial_df)
+                        #     with col2:
+                        #         st.write(mae_trial_df)
 
 
                     else:

@@ -100,6 +100,35 @@ class Template:
                 with in_col2:
                     st.write(best_score_df_4)
 
+    def print_reg_best_result(
+                self, title_1, title_2, 
+                best_score_df_1, best_score_df_2,
+                ):
+        '''
+        Insert title_1, title_2, best_score_df_1, best_score_df_2
+        '''
+        with st.container():
+            col1, col2 = st.columns(2)
+
+            with col1:
+                st.subheader(title_1)
+                in_col1, in_col2 = st.columns(2)
+                
+                with in_col1:
+                    st.bar_chart(best_score_df_1)
+                with in_col2:
+                    st.write(best_score_df_1)
+
+            with col2:
+                st.subheader(title_2)
+                in_col1, in_col2 = st.columns(2)
+                with in_col1:
+                    st.bar_chart(best_score_df_2)
+                with in_col2:
+                    st.write(best_score_df_2)
+
+
+
         # with st.container():
         #     col1, col2 = st.columns(2)
         #     with col1:
@@ -174,6 +203,30 @@ class Template:
                 st.line_chart(trial_score_df_4)
             with col2:
                 st.write(trial_score_df_4)
+
+    def print_reg_trial_result(
+        self, title_1, title_2,
+        trial_score_df_1, trial_score_df_2, 
+        ):
+        '''
+        Insert title_1, title_2, trial_score_df_1, trial_score_df_2
+        '''
+
+        with st.container():
+            st.subheader(title_1)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.line_chart(trial_score_df_1)
+            with col2:
+                st.write(trial_score_df_1)
+
+        with st.container():
+            st.subheader(title_2)
+            col1, col2 = st.columns(2)
+            with col1:
+                st.line_chart(trial_score_df_2)
+            with col2:
+                st.write(trial_score_df_2)
 
     # def print_trial_result(self, title_1, title_2, trial_score_df_1, trial_score_df_2):
     #     '''
