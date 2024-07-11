@@ -1,6 +1,6 @@
 import pandas as pd
 import streamlit as st
-
+import plotly.express as px
 
 class Template:
     def __init__(self, df):
@@ -11,14 +11,14 @@ class Template:
         Columns name, Null, Dtype 확인
         '''
         df = self.df
-        st.write('Null information')
+        # st.write('Null information')
         info_df = pd.DataFrame({'Column names': df.columns,
                                 'Non-Null Count': df.count(),
                                 'Null Count': df.isnull().sum(),
                                 'Dtype': df.dtypes,
                                 })
         info_df.reset_index(inplace=True)
-        st.write(info_df.iloc[:, 1:].astype(str))
+        st.dataframe(info_df.iloc[:, 1:].astype(str), use_container_width=True)
 
     def eda_df(self, tab_eda_df, tab_eda_info):
         '''
@@ -26,7 +26,7 @@ class Template:
         '''
         with tab_eda_df:
             # st.write('Original data')
-            st.dataframe(self.df)
+            st.dataframe(self.df, use_container_width=True)
         with tab_eda_info:
             # template = Template(df)
             self.info_df() 
@@ -35,14 +35,22 @@ class Template:
         '''
         제거할 Label 선택
         '''
-        test = self.df[target_feture].value_counts().reset_index()
-        val_counts_df = pd.DataFrame({'Labels': test.iloc[:, 0],
-                                    'Counts': test.iloc[:, 1]})
-        st.write(val_counts_df)
+        val_counts = self.df[target_feture].value_counts().reset_index()
+        val_counts_df = pd.DataFrame({'Labels': val_counts.iloc[:, 0],
+                                    'Counts': val_counts.iloc[:, 1]})
         bar_data = val_counts_df
         bar_data.index = val_counts_df['Labels']
-        st.bar_chart(bar_data['Counts'])
-
+        # st.dataframe(val_counts_df, use_container_width=True) # Target Data Counts
+        col1, col2 = st.columns(2)
+        with col1:
+            st.bar_chart(bar_data['Counts'])
+            st.dataframe(val_counts_df, use_container_width=True) # Target Data Counts
+        with col2:
+            pie_fig = px.pie(bar_data, values=bar_data['Counts'], names=bar_data['Labels'])
+            st.plotly_chart(pie_fig)
+        # st.dataframe(val_counts_df, use_container_width=True) # Target Data Counts
+            
+        
         # Target Data 설정해야 제거할 Label 선택 가능
         label_to_drop = st.sidebar.multiselect('제거할 Target 데이터 선택', options=val_counts_df.iloc[:, 0])
         return label_to_drop
@@ -53,7 +61,7 @@ class Template:
         '''
         sample_df = pd.DataFrame({'Label': ['Select Label Column'], # Sample Data
                                 'Counts': ['Select Label Column']})
-        st.write(sample_df)
+        st.dataframe(sample_df, use_container_width=True)
 
     def print_best_result(
             self, title_1, title_2, title_3, title_4, 
@@ -72,7 +80,7 @@ class Template:
                 with in_col1:
                     st.bar_chart(best_score_df_1)
                 with in_col2:
-                    st.write(best_score_df_1)
+                    st.dataframe(best_score_df_1, use_container_width=True)
 
             with col2:
                 st.subheader(title_2)
@@ -80,7 +88,7 @@ class Template:
                 with in_col1:
                     st.bar_chart(best_score_df_2)
                 with in_col2:
-                    st.write(best_score_df_2)
+                    st.dataframe(best_score_df_2, use_container_width=True)
 
             col1, col2 = st.columns(2)
             with col1:
@@ -90,7 +98,7 @@ class Template:
                 with in_col1:
                     st.bar_chart(best_score_df_3)
                 with in_col2:
-                    st.write(best_score_df_3)
+                    st.dataframe(best_score_df_3, use_container_width=True)
 
             with col2:
                 st.subheader(title_4)
@@ -98,7 +106,7 @@ class Template:
                 with in_col1:
                     st.bar_chart(best_score_df_4)
                 with in_col2:
-                    st.write(best_score_df_4)
+                    st.dataframe(best_score_df_4, use_container_width=True)
 
     def print_reg_best_result(
                 self, title_1, title_2, 
@@ -117,7 +125,7 @@ class Template:
                 with in_col1:
                     st.bar_chart(best_score_df_1)
                 with in_col2:
-                    st.write(best_score_df_1)
+                    st.dataframe(best_score_df_1, use_container_width=True)
 
             with col2:
                 st.subheader(title_2)
@@ -125,7 +133,7 @@ class Template:
                 with in_col1:
                     st.bar_chart(best_score_df_2)
                 with in_col2:
-                    st.write(best_score_df_2)
+                    st.dataframe(best_score_df_2, use_container_width=True)
 
 
 

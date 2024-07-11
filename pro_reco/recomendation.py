@@ -7,6 +7,11 @@
 # sqlite:///./database/database.db
 # AxiosError: Request failed with status code 403 in streamlit 발생 시, enableXsrfProtection 입력하여 실행
 # streamlit run recomendation.py --server.enableXsrfProtection false
+
+# streamlit 1.24.0 이상 버전에서 파일 업로드할 경우 AxiosError: Request failed with status code 403 발생할 수 있음
+# AxiosError 403 에러 발생 시 streamlit==1.24.0 버전으로 변경 
+# pip install streamlit==1.24.0
+
 import ray
 import json
 import requests
@@ -16,9 +21,10 @@ from lib.template import Template
 from lib.prepro import Preprocessing
 from database.connector import Database # , SelectTB
 from io import StringIO
+import time
 
-import matplotlib.pyplot as plt
-import seaborn as sns
+# import matplotlib.pyplot as plt
+# import seaborn as sns
 
 
 st.set_page_config(layout="wide")
@@ -127,7 +133,7 @@ with st.spinner('Wait for it...'):
         # 데이터 전처리된 데이터 출력
         if updated_df is not None: 
             st.subheader('데이터 전처리')
-            st.dataframe(updated_df)
+            st.dataframe(updated_df, use_container_width=True)
         
         if st.sidebar.button("초기화"):
             st.cache_resource.clear()
@@ -136,7 +142,9 @@ with st.spinner('Wait for it...'):
 #################### Starting ML traning
         button_for_training = st.sidebar.button("머신러닝 테스트 실행", key="button1") 
         if button_for_training: # 분류, 이상탐지 옵션에 따라 머신러닝 학습 진행
+            start_time = time.time()
             # start_time = time.time() # 학습 시간 체크 시 설정
+
 
             if option == '분류':
                 st.subheader('머신러닝 학습 결과')
@@ -180,70 +188,12 @@ with st.spinner('Wait for it...'):
                             'Trial_accuracy', 'Trial_recall', 'Trial_precision', 'Trial_f1_score',
                             accuracy_trial_df, recall_trial_df, precision_trial_df, f1score_trial_df
                         )
-
+                        end_time = time.time()
+                        execution_time = end_time - start_time  # 실행 시간 계산
+                        print(f"코드 실행 시간: {execution_time} 초")
                     else:
                         st.write("Error:", response.status_code)
-
-###
-                        # st.write('data',data)
-                        # model_list = ['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian']
-                        
-                        # # temp_df = pd.DataFrame([], columns=['accuracy'],index=['randomforest', 'gradient', 'xgboost', 'catboost', 'adaboost', 'knn', 'gaussian'])
-                        # temp_best_df = pd.DataFrame()
-                        # temp_trial_df = pd.DataFrame()
-                        # # best_df = pd.DataFrame()
-                        # for name in model_list:
-                        #     loaded_best_data = json.loads(data['best_df'][name])
-                        #     loaded_trial_data = json.loads(data['trial_df'][name])
-                        #     # best score
-                        #     loaded_best_df = pd.DataFrame(loaded_best_data)
-                        #     loaded_best_series = loaded_best_df['value']
-                        #     temp_best_df = pd.concat([temp_best_df, loaded_best_series])
-                        #     # trial score
-
-                        #     # loaded_trial_df = pd.DataFrame(loaded_trial_data)
-                        #     # loaded_trial_series = loaded_trial_df['value']
-                        #     # temp_trial_df = pd.concat([temp_trial_df, loaded_trial_series], axis=1)
-
-                        #     loaded_trial_df = pd.DataFrame(loaded_trial_data)
-                        #     loaded_trial_series = loaded_trial_df['value']
-                        #     temp_trial_df[name + '_accuracy'] = loaded_trial_series
-
-                        # temp_best_df.columns = ['best_accuracy']
-                        # temp_best_df.index = model_list
-
-                        # with st.container():
-                        #     st.subheader('accuracy')
-                        #     col1, col2 = st.columns(2)
-                        #     with col1:
-                        #         tab1, tab2 = st.tabs(['Best_accuracy_bar_chart', 'Trial_accuracy_line_chart'])
-                        #         with tab1:
-                        #             st.bar_chart(temp_best_df)
-                        #         with tab2:
-                        #             st.line_chart(temp_trial_df)
-
-                        #     with col2:
-                        #         tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
-                        #         with tab1:
-                        #             num_rows_to_display = 7  # 원하는 행의 수
-                        #             row_height = 50  # 각 행의 높이
-                        #             total_height = num_rows_to_display * row_height
-                        #             st.dataframe(temp_trial_df,  height=total_height)
-                        #         with tab2:
-                        #             st.write(temp_best_df)
-###
-                        # col1, col2 = st.columns(2)
-                        # tab1, tab2 = st.tabs(['trial_accuracy', 'best_accuracy'])
-                        # with tab1:
-                        #     st.write(temp_trial_df)
-                        # with tab2:
-                        #     st.write(temp_best_df)
-                        
-                        # temp_trial_df.columns = ['accuracy']
-                        # temp_trial_df.index = model_list
-
-
-                        # st.write(temp_trial_df)          
+          
                         
             if option == '회귀':
                 st.subheader('머신러닝 학습 결과')
@@ -285,67 +235,11 @@ with st.spinner('Wait for it...'):
                             'Trial_mean_squared_error', 'Trial_mean_absolute_error',
                             mse_trial_df, mae_trial_df
                         )
-
-                        # with st.container():
-                        #     # st.subheader('mean_squared_error')
-                        #     col1, col2 = st.columns(2)
-                        #     with col1:
-                        #         st.subheader('Best_mean_squared_error')
-                        #         in_col1, in_col2 = st.columns(2)
-                        #         with in_col1:
-                        #             st.bar_chart(mse_best_df)
-                        #         with in_col2:
-                        #             st.write(mse_best_df)
-                        #     with col2:
-                        #         st.subheader('Best_mean_absolute_error')
-                        #         in_col1, in_col2 = st.columns(2)
-                        #         with in_col1:
-                        #             st.bar_chart(mae_best_df)
-                        #         with in_col2:
-                        #             st.write(mae_best_df)
-
-                        # with st.container():
-                        #     st.subheader('All_mean_squared_error')
-                        #     col1, col2 = st.columns(2)
-                        #     with col1:
-                        #         st.line_chart(mse_trial_df)
-                        #     with col2:
-                        #         st.write(mse_trial_df)
-                                
-                        # with st.container():
-                        #     st.subheader('All_mean_absolute_error')
-                        #     col1, col2 = st.columns(2)
-                        #     with col1:
-                        #         st.line_chart(mae_trial_df)
-                        #     with col2:
-                        #         st.write(mae_trial_df)
-
-
+                        end_time = time.time()
+                        execution_time = end_time - start_time  # 실행 시간 계산
+                        print(f"코드 실행 시간: {execution_time} 초")
                     else:
                         st.write("Error:", response.status_code)
-
-                        # model_compare_clf = pd.DataFrame(data, index=['XGBRegressor', 'RandomForestRegressor', 'AdaBoostRegressor',
-                        #                                               'GradientBoostingRegressor', 'Ridge', 'Lasso', 'ElasticNet'])
-
-
-                        # with st.container():
-                        #     col1, col2 = st.columns(2)
-                        #     with col1:
-                        #         st.subheader('mean_absolute_error')
-                        #         st.bar_chart(model_compare_clf['mean_absolute_error'])
-                        #     with col2:
-                        #         st.subheader('mean_absolute_error')
-                        #         st.dataframe(model_compare_clf['mean_absolute_error'])
-
-                        # with st.container():
-                        #     col1, col2 = st.columns(2)
-                        #     with col1:
-                        #         st.subheader('mean_squared_error')
-                        #         st.bar_chart(model_compare_clf['mean_squared_error'])
-                        #     with col2:
-                        #         st.subheader('mean_squared_error')
-                        #         st.dataframe(model_compare_clf['mean_squared_error'])
-                        # ray.shutdown() # 머신러닝 모델 분산 학습 종료
            
             if option == '이상탐지':
                 st.subheader('머신러닝 학습 결과')
