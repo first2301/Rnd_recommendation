@@ -173,20 +173,27 @@ with st.spinner('Wait for it...'):
                         f1score_trial_df = pd.read_json(StringIO(data['3']['trial']))
 
                         concat_df = pd.concat([accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df], axis=1)
+                        sorted_concat_df = concat_df.sort_values(by='accuracy', ascending=False)
                         col1, col2 = st.columns(2)
                         with col1:
-                            st.scatter_chart(concat_df)
+                            st.scatter_chart(sorted_concat_df.set_index('accuracy'))
                         with col2:
-                            st.dataframe(concat_df, use_container_width=True)
+                            st.dataframe(sorted_concat_df, use_container_width=True)
 
                         template.print_best_result(
                             'Best_accuracy', 'Best_recall', 'Best_precision', 'Best_f1_score',
-                            accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df
+                            accuracy_best_df.sort_values(by='accuracy', ascending=False), 
+                            recall_best_df.sort_values(by='recall', ascending=False), 
+                            precision_best_df.sort_values(by='precision', ascending=False), 
+                            f1score_best_df.sort_values(by='f1_weighted', ascending=False)
                         )
 
                         template.print_trial_result(
                             'Trial_accuracy', 'Trial_recall', 'Trial_precision', 'Trial_f1_score',
-                            accuracy_trial_df, recall_trial_df, precision_trial_df, f1score_trial_df
+                            accuracy_trial_df, 
+                            recall_trial_df, 
+                            precision_trial_df, 
+                            f1score_trial_df
                         )
                         end_time = time.time()
                         execution_time = end_time - start_time  # 실행 시간 계산
@@ -220,6 +227,7 @@ with st.spinner('Wait for it...'):
                         mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) # mae_trial_df
 
                         concat_reg_df = pd.concat([mse_best_df, mae_best_df], axis=1)
+                        sorted_concat_reg_df = concat_reg_df.sort_values('neg_mean_squared_error', ascending=False)
                         col1, col2 = st.columns(2)
                         with col1:
                             st.scatter_chart(concat_reg_df)
@@ -228,7 +236,8 @@ with st.spinner('Wait for it...'):
 
                         template.print_reg_best_result(
                             'Best_mean_squared_error', 'Best_mean_absolute_error',
-                            mse_best_df, mae_best_df
+                            mse_best_df.sort_values(by='neg_mean_squared_error', ascending=False), 
+                            mae_best_df.sort_values(by='neg_mean_absolute_error', ascending=False)
                         )
 
                         template.print_reg_trial_result(
