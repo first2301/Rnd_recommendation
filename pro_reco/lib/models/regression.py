@@ -36,9 +36,6 @@ class RegressionModels:
         self.start_var_smoothing = 1e-9
         self.end_var_smoothing = 1e-5
 
-        # Define study
-        # self.study = optuna.create_study(direction="maximize")
-
     def optimizer(self, model_func):
         study = optuna.create_study(direction="maximize")
         study.optimize(model_func, n_trials=self.n_trials)
@@ -119,6 +116,8 @@ def compare_reg_models(df, target, n_trials):
     for idx, scoring in enumerate(scorings):
         results[idx] = RegressionModels(df, target, scoring, n_trials).run_reg_models()
     return results
+
+
     # def run_reg_models(self):
     #     total_results = dict()
     #     total_results[1] = self.optimizer(self.random_forest_model)

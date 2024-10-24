@@ -76,7 +76,7 @@ class Classification:
         model = GaussianNB(var_smoothing=var_smoothing)
         return cross_val_score(model, self.X, self.y, cv=5, scoring=self.scoring).mean()
 
-    def run_reg_models(self):
+    def run_clf_models(self):
         scoring = self.scoring
         models = {
             'randomforest': self.optimizer(self.random_forest_model),
@@ -111,7 +111,7 @@ def compare_clf_models(df, target, n_trials):
     scorings = ['accuracy', 'recall', 'precision', 'f1_weighted']
     results = dict()
     for idx, scoring in enumerate(scorings):
-        results[idx] = Classification(df, target, scoring, n_trials).run_reg_models()
+        results[idx] = Classification(df, target, scoring, n_trials).run_clf_models()
     return results
 
 

@@ -12,7 +12,7 @@
 # AxiosError 403 에러 발생 시 streamlit==1.24.0 버전으로 변경 
 # pip install streamlit==1.24.0
 
-import ray
+# import ray
 import json
 import requests
 import pandas as pd
@@ -69,21 +69,6 @@ if connecton_option == 'DB_connection':
 #     st.sidebar.write('Need to upload csv file')
 
 with st.spinner('Wait for it...'):
-    # if uploaded_file is None: 
-    #     st.write(
-    #     '''
-    #     ### 머신러닝 실행 방법
-    #     * 분류
-    #     1. Upload csv file 
-    #     2. Select Target column 
-    #     3. Drop cloumns
-    #     4. 제거할 Target 데이터 선택
-
-    #     * 이상 탐지
-    #     1. Upload csv file
-    #     2. 머신러닝 테스트 실행
-    #     ''')
-
     updated_df = None
     # Uploaded data Dashboard
     if uploaded_file is not None or df is not None:
@@ -159,6 +144,7 @@ with st.spinner('Wait for it...'):
                     if response.status_code == 200: 
                         json_data = response.json() 
                         data = json.loads(json_data['result'])
+
                         #     0. accuracy 1. recall 2. precision 3. f1_weighted
                         accuracy_best_df = pd.read_json(StringIO(data['0']['best']))
                         accuracy_trial_df = pd.read_json(StringIO(data['0']['trial']))
@@ -173,10 +159,18 @@ with st.spinner('Wait for it...'):
                         f1score_trial_df = pd.read_json(StringIO(data['3']['trial']))
 
                         concat_df = pd.concat([accuracy_best_df, recall_best_df, precision_best_df, f1score_best_df], axis=1)
-                        sorted_concat_df = concat_df.sort_values(by='accuracy', ascending=False)
+                        sorted_concat_df = concat_df.sort_values(by='f1_weighted', ascending=False)
+
+                        sorted_concat_df.to_csv('./sorted_concat_df.csv', index=False)
+                        accuracy_trial_df.to_csv('./accuracy_trial_df.csv', index=False)
+                        recall_trial_df.to_csv('./recall_trial_df.csv', index=False)
+                        precision_trial_df.to_csv('./precision_trial_df.csv', index=False)
+                        f1score_trial_df.to_csv('./f1score_trial_df.csv', index=False)
+
                         col1, col2 = st.columns(2)
                         with col1:
-                            st.scatter_chart(sorted_concat_df.set_index('accuracy'))
+                            # st.scatter_chart(sorted_concat_df.set_index('accuracy'))
+                            st.scatter_chart(sorted_concat_df)
                         with col2:
                             st.dataframe(sorted_concat_df, use_container_width=True)
 
@@ -195,6 +189,7 @@ with st.spinner('Wait for it...'):
                             precision_trial_df, 
                             f1score_trial_df
                         )
+
                         end_time = time.time()
                         execution_time = end_time - start_time  # 실행 시간 계산
                         print(f"코드 실행 시간: {execution_time} 초")
@@ -221,13 +216,19 @@ with st.spinner('Wait for it...'):
                         # st.write(data)
 
                         # st.write(data)
-                        mse_best_df = pd.read_json(StringIO(data['0']['best'])) # mse_best_df
-                        mse_trial_df = pd.read_json(StringIO(data['0']['trial'])) # mse_trial_df
-                        mae_best_df = pd.read_json(StringIO(data['1']['best'])) # mae_best_df
-                        mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) # mae_trial_df
+
+                        mse_best_df = pd.read_json(StringIO(data['0']['best'])) 
+                        mse_trial_df = pd.read_json(StringIO(data['0']['trial'])) 
+                        mae_best_df = pd.read_json(StringIO(data['1']['best'])) 
+                        mae_trial_df = pd.read_json(StringIO(data['1']['trial'])) 
 
                         concat_reg_df = pd.concat([mse_best_df, mae_best_df], axis=1)
                         sorted_concat_reg_df = concat_reg_df.sort_values('neg_mean_squared_error', ascending=False)
+
+                        sorted_concat_reg_df.to_csv('./sorted_concat_reg_df.csv', index=False)
+                        mse_trial_df.to_csv('./mse_trial_df.csv', index=False)
+                        mae_trial_df.to_csv('./mae_trial_df.csv', index=False)
+
                         col1, col2 = st.columns(2)
                         with col1:
                             st.scatter_chart(concat_reg_df)
